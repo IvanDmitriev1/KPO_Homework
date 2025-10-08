@@ -92,7 +92,7 @@ KPO_HW1.Tests/
 - Методы работают через базовые типы и интерфейсы, обеспечивая поведенческую совместимость.
 
 **I — Interface Segregation**
-- Ннтерфейсы: `IAlive` (еда), `IInventory` (инв. номер), `IHerbivore` (доброта), `IVeterinaryClinic` (проверка здоровья), а также фабричные интерфейсы.
+- Интерфейсы: `IAlive` (еда), `IInventory` (инв. номер), `IHerbivore` (доброта), `IVeterinaryClinic` (проверка здоровья), а также фабричные интерфейсы.
 
 **D — Dependency Inversion**
 - `App` зависит от абстракций `IZoo`, `IAnimalFactory`, `IThingFactory`.
