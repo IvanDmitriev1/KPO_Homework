@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="KPO_HW2.App/KPO_HW2.App.csproj" />
+  <Project Path="KPO_HW2.Tests/KPO_HW2.Tests.csproj" />
+  <Project Path="KPO_HW2/KPO_HW2.csproj" Id="0d9a0e70-ed7c-4e37-b6df-5fdade848dda" />
+</Solution>
