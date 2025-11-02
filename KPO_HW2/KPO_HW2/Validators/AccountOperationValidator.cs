@@ -1,0 +1,33 @@
+﻿using FluentValidation;
+using KPO_HW2.Models;
+using BankAccountId = KPO_HW2.Models.BankAccountId;
+using CategoryId = KPO_HW2.Models.CategoryId;
+
+namespace KPO_HW2.Validators;
+
+public class AccountOperationValidator : AbstractValidator<AccountOperation>
+{
+    public AccountOperationValidator()
+    {
+        RuleFor(x => x.Amount.AmountMinor)
+            .GreaterThan(0)
+            .WithMessage("Amount must be positive");
+
+        RuleFor(x => x.Description)
+            .NotEmpty()
+            .MaximumLength(500)
+            .WithMessage("Description must not be empty and should be less than 500 characters");
+
+        RuleFor(x => x.BankAccountId)
+            .NotEqual(default(BankAccountId))
+            .WithMessage("Bank account ID must be specified");
+
+        RuleFor(x => x.CategoryId)
+            .NotEqual(default(CategoryId))
+            .WithMessage("Category ID must be specified");
+
+        RuleFor(x => x.DateOfOperation)
+            .LessThanOrEqualTo(DateTimeOffset.UtcNow)
+            .WithMessage("Operation date cannot be in the future");
+    }
+}
