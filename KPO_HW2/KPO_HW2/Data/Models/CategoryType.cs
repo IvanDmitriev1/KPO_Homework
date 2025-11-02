@@ -1,4 +1,4 @@
-﻿namespace KPO_HW2.Models;
+﻿namespace KPO_HW2.Data.Models;
 
 public enum CategoryType
 {

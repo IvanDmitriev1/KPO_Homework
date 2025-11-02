@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
-using KPO_HW2.Models;
-using CategoryId = KPO_HW2.Models.CategoryId;
+using KPO_HW2.Data.Models;
 
 namespace KPO_HW2.Validators;
 
