@@ -1,6 +1,4 @@
 ﻿using KPO_HW2.Data.Abstractions;
-using KPO_HW2.Data.Models;
-using KPO_HW2.Data.Repositories;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace KPO_HW2.Data.Repositories.Cache;

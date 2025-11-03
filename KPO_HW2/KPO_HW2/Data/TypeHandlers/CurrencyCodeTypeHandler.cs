@@ -1,6 +1,5 @@
 ﻿using System.Data;
 using Dapper;
-using KPO_HW2.Data.Models;
 
 namespace KPO_HW2.Data.TypeHandlers;
 

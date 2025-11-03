@@ -1,4 +1,4 @@
-﻿namespace KPO_HW2.Data.Models;
+﻿namespace KPO_HW2.Models;
 
 public readonly record struct Money
 {
@@ -18,9 +18,9 @@ public readonly record struct Money
         CurrencyCode = currency
     };
 
-    public static Money Create(Int64 amount, CurrencyCode code) => new()
+    public static Money Create(decimal amount, CurrencyCode code) => new()
     {
-        AmountMinor = amount,
+        AmountMinor = (Int64)decimal.Round(amount * 100m, 0, MidpointRounding.AwayFromZero),
         CurrencyCode = code
     };
 }

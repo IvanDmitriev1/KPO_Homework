@@ -6,6 +6,4 @@ internal interface IDbContextFactory<out TDbContext>
     public string ConnectionString { get; }
 
     TDbContext Create();
-    
-    IAsyncDbConnection CreateAsyncDbConnection();
 }

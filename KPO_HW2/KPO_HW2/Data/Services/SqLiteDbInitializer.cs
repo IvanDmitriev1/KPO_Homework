@@ -1,7 +1,18 @@
-﻿namespace KPO_HW2.Data.Services;
+﻿using System.Data;
+using Dapper;
+using KPO_HW2.Data.Abstractions;
+
+namespace KPO_HW2.Data.Services;
 
 internal class SqLiteDbInitializer
 {
+    public SqLiteDbInitializer(IDbContextFactory<AppDbContext> contextFactory)
+    {
+        _contextFactory = contextFactory;
+    }
+
+    private readonly IDbContextFactory<AppDbContext> _contextFactory;
+
     public async Task Initialize()
     {
         const string sql = """
@@ -35,5 +46,10 @@ internal class SqLiteDbInitializer
                                FOREIGN KEY (CategoryId)    REFERENCES Category(Id)    ON DELETE RESTRICT
                            );
                            """;
+
+        await using var dbContext = _contextFactory.Create();
+        await dbContext.CurrentTransaction.Connection!.ExecuteAsync(sql, null, dbContext.CurrentTransaction);
+
+        await dbContext.CommitAsync();
     }
 }

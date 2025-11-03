@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using KPO_HW2.Data.Abstractions;
 using KPO_HW2.Data.Extensions;
-using KPO_HW2.Data.Models;
 
 namespace KPO_HW2.Data.Repositories;
 
@@ -12,7 +11,6 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
         const string sql = """
             SELECT
                 Id,
-                AccountOperationType,
                 BankAccountId,
                 DateOfOperation,
                 Description,
@@ -28,7 +26,6 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
             (op, money) => new AccountOperation
             {
                 Id = op.Id,
-                AccountOperationType = op.AccountOperationType,
                 BankAccountId = op.BankAccountId,
                 Amount = money,
                 DateOfOperation = op.DateOfOperation,
@@ -45,7 +42,6 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
         const string sql = """
             SELECT
                 Id,
-                AccountOperationType,
                 BankAccountId,
                 DateOfOperation,
                 Description,
@@ -61,7 +57,6 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
             (op, money) => new AccountOperation
             {
                 Id = op.Id,
-                AccountOperationType = op.AccountOperationType,
                 BankAccountId = op.BankAccountId,
                 Amount = money,
                 DateOfOperation = op.DateOfOperation,
@@ -77,14 +72,13 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
     {
         const string sql = """
             INSERT INTO AccountOperation
-                (Id, AccountOperationType, BankAccountId, AmountMinor, CurrencyCode, DateOfOperation, Description, CategoryId)
+                (Id, BankAccountId, AmountMinor, CurrencyCode, DateOfOperation, Description, CategoryId)
             VALUES
                 (@Id, @AccountOperationType, @BankAccountId, @AmountMinor, @CurrencyCode, @DateOfOperation, @Description, @CategoryId);
         """;
 
         var p = new DynamicParameters();
         p.Add("Id", entity.Id);
-        p.Add("AccountOperationType", entity.AccountOperationType);
         p.Add("BankAccountId", entity.BankAccountId);
         p.AddMoney("Amount", entity.Amount);
         p.Add("DateOfOperation", entity.DateOfOperation);
@@ -98,8 +92,7 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
     {
         const string sql = """
             UPDATE AccountOperation
-            SET AccountOperationType = @AccountOperationType,
-                BankAccountId        = @BankAccountId,
+            SET BankAccountId        = @BankAccountId,
                 AmountMinor          = @AmountMinor,
                 CurrencyCode         = @CurrencyCode,
                 DateOfOperation      = @DateOfOperation,
@@ -110,7 +103,6 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
 
         var p = new DynamicParameters();
         p.Add("Id", entity.Id);
-        p.Add("AccountOperationType", entity.AccountOperationType);
         p.Add("BankAccountId", entity.BankAccountId);
         p.AddMoney("Amount", entity.Amount);
         p.Add("DateOfOperation", entity.DateOfOperation);

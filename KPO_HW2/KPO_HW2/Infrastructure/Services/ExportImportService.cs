@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
-using KPO_HW2.Data.Models;
 using KPO_HW2.Data.Services;
 using KPO_HW2.Infrastructure.Abstractions;
 using KPO_HW2.Infrastructure.DataExport;
 using KPO_HW2.Infrastructure.Models;
 
-namespace KPO_HW2.Infrastructure.Implementations;
+namespace KPO_HW2.Infrastructure.Services;
 
 internal class ExportImportService : IExportImportService
 {

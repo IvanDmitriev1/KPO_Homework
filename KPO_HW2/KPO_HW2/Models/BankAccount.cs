@@ -1,6 +1,6 @@
 ﻿using StronglyTypedIds;
 
-namespace KPO_HW2.Data.Models;
+namespace KPO_HW2.Models;
 
 
 [StronglyTypedId(Template.Guid, "guid-dapper", "guid-yaml")]

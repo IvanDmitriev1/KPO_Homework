@@ -1,7 +1,7 @@
-﻿using KPO_HW2.Data.Models;
-using KPO_HW2.Infrastructure.Models;
+﻿using KPO_HW2.Infrastructure.Models;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
+using AccountOperationId = KPO_HW2.Models.AccountOperationId;
 
 namespace KPO_HW2.Infrastructure.DataExport;
 

@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using KPO_HW2.Data.Models;
 using System.Data;
 
 namespace KPO_HW2.Data.Extensions;

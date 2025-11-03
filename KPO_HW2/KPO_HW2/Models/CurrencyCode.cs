@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using NetEscapades.EnumGenerators;
 
-namespace KPO_HW2.Data.Models;
+namespace KPO_HW2.Models;
 
 [EnumExtensions]
 public enum CurrencyCode

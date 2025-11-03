@@ -1,5 +1,4 @@
-﻿using KPO_HW2.Data.Models;
-using KPO_HW2.Infrastructure.DataExport;
+﻿using KPO_HW2.Infrastructure.DataExport;
 
 namespace KPO_HW2.Infrastructure.Models;
 

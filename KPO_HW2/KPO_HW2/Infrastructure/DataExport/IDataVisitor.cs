@@ -1,6 +1,4 @@
-﻿using KPO_HW2.Data.Models;
-
-namespace KPO_HW2.Infrastructure.DataExport;
+﻿namespace KPO_HW2.Infrastructure.DataExport;
 
 public interface IDataVisitor
 {

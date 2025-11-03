@@ -1,6 +1,4 @@
-﻿using KPO_HW2.Data.Models;
-
-namespace KPO_HW2.Data.Abstractions;
+﻿namespace KPO_HW2.Data.Abstractions;
 
 internal interface IBankAccountRepository : IRepository<BankAccount, BankAccountId>
 {

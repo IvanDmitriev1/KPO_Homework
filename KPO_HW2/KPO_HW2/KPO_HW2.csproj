@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <AdditionalFiles Include="Data/TypedIds/**" />
+	  <AdditionalFiles Include="Models/TypedIds/**" />
   </ItemGroup>
 
 </Project>

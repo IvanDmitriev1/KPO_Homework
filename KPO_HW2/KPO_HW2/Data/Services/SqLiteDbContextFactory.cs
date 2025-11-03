@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using KPO_HW2.Data.Abstractions;
-using KPO_HW2.Data.Models;
 using KPO_HW2.Data.TypeHandlers;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Caching.Memory;
@@ -19,7 +18,6 @@ internal class SqLiteDbContextFactory : IDbContextFactory<AppDbContext>
         SqlMapper.AddTypeHandler(new AccountOperationId.DapperTypeHandler());
         SqlMapper.AddTypeHandler(new CurrencyCodeTypeHandler());
         SqlMapper.AddTypeHandler(new EnumTypeHandler<CategoryType>());
-        SqlMapper.AddTypeHandler(new EnumTypeHandler<AccountOperationType>());
     }
 
     private readonly IMemoryCache _memoryCache;
@@ -30,10 +28,5 @@ internal class SqLiteDbContextFactory : IDbContextFactory<AppDbContext>
     {
         var connection = new SqliteConnection(ConnectionString);
         return new AppDbContext(new SqLiteDbConnectionAdapter(connection), _memoryCache);
-    }
-
-    public IAsyncDbConnection CreateAsyncDbConnection()
-    {
-        return new SqLiteDbConnectionAdapter(new SqliteConnection(ConnectionString));
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using KPO_HW2.Data.Abstractions;
-using KPO_HW2.Data.Models;
 using System.Data;
 using KPO_HW2.Data.Extensions;
 
