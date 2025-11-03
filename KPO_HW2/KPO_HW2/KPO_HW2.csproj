@@ -14,14 +14,11 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.10" />
     <PackageReference Include="NetEscapades.EnumGenerators" Version="1.0.0-beta14" />
     <PackageReference Include="StronglyTypedId" Version="1.0.0-beta08" PrivateAssets="all" ExcludeAssets="runtime" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-	  <AdditionalFiles Include="TypedIds/**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Infrastructure\Abstractions\" />
+	  <AdditionalFiles Include="Data/TypedIds/**" />
   </ItemGroup>
 
 </Project>

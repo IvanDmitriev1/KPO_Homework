@@ -1,8 +1,10 @@
 ﻿using StronglyTypedIds;
+using YamlDotNet.Core;
+using YamlDotNet.Serialization;
 
 namespace KPO_HW2.Data.Models;
 
-[StronglyTypedId(Template.Guid, "guid-dapper")]
+[StronglyTypedId(Template.Guid, "guid-dapper", "guid-yaml")]
 public readonly partial struct AccountOperationId;
 
 public class AccountOperation

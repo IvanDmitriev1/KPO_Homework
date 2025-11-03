@@ -34,12 +34,12 @@ internal class CachedBankAccountRepository : IBankAccountRepository
             return await _inner.GetByIdAsync(id, ct);
         });
 
-    public Task<IReadOnlyList<BankAccount>> GetAllAsync(CancellationToken ct = default)
-        => _cache.GetOrCreateAsync(KAll, async _ =>
+    public async Task<IReadOnlyList<BankAccount>> GetAllAsync(CancellationToken ct = default)
+        => await _cache.GetOrCreateAsync(KAll, async _ =>
         {
             _.SetOptions(_opts);
             return await _inner.GetAllAsync(ct);
-        });
+        }) ?? [];
 
     public async Task AddAsync(BankAccount entity, CancellationToken ct = default)
     {

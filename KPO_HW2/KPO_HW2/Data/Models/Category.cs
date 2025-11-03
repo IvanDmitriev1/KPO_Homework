@@ -2,7 +2,7 @@
 
 namespace KPO_HW2.Data.Models;
 
-[StronglyTypedId(Template.Guid, "guid-dapper")]
+[StronglyTypedId(Template.Guid, "guid-dapper", "guid-yaml")]
 public readonly partial struct CategoryId;
 
 public class Category
