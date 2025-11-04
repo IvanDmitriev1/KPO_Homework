@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using KPO_HW2.Data.Services;
 using KPO_HW2.Infrastructure.Abstractions;
+using KPO_HW2.Models;
 
 namespace KPO_HW2.Infrastructure.Services;
 
@@ -33,7 +34,7 @@ internal class AccountOperationService : IAccountOperationService
         var account = await _appDbContext.BankAccountRepository.GetByIdAsync(accountId)
                       ?? throw new InvalidOperationException($"Account {accountId} not found.");
 
-        _ = await _appDbContext.CategoryRepository.GetByIdAsync(categoryId)
+        var category = await _appDbContext.CategoryRepository.GetByIdAsync(categoryId)
                        ?? throw new InvalidOperationException($"Category {categoryId} not found.");
 
         var entity = new AccountOperation
@@ -48,7 +49,10 @@ internal class AccountOperationService : IAccountOperationService
 
         _validator.ValidateAndThrow(entity);
 
-        account.Balance += amount;
+        if (category.CategoryType == CategoryType.Income)
+            account.Balance += amount;
+        else
+            account.Balance -= amount;
 
         await _appDbContext.AccountOperationRepository.AddAsync(entity);
         await _appDbContext.BankAccountRepository.UpdateAsync(account);
@@ -65,12 +69,23 @@ internal class AccountOperationService : IAccountOperationService
         var account = await _appDbContext.BankAccountRepository.GetByIdAsync(existing.BankAccountId)
                       ?? throw new InvalidOperationException($"Account {existing.BankAccountId} not found.");
 
-        account.Balance -= existing.Amount;
+        var category = await _appDbContext.CategoryRepository.GetByIdAsync(existing.CategoryId)
+                       ?? throw new InvalidOperationException($"Category {existing.CategoryId} not found.");
 
-        existing.Amount = newAmount;
-        existing.Description = newDesc;
-
-        account.Balance += newAmount;
+        if (category.CategoryType == CategoryType.Income)
+        {
+            account.Balance -= existing.Amount;
+            existing.Amount = newAmount;
+            existing.Description = newDesc;
+            account.Balance += newAmount;
+        }
+        else // Expense
+        {
+            account.Balance += existing.Amount;
+            existing.Amount = newAmount;
+            existing.Description = newDesc;
+            account.Balance -= newAmount;
+        }
 
         _validator.ValidateAndThrow(existing);
 
@@ -88,7 +103,13 @@ internal class AccountOperationService : IAccountOperationService
         var account = await _appDbContext.BankAccountRepository.GetByIdAsync(existing.BankAccountId)
                       ?? throw new InvalidOperationException($"Account {existing.BankAccountId} not found.");
 
-        account.Balance -= existing.Amount;
+        var category = await _appDbContext.CategoryRepository.GetByIdAsync(existing.CategoryId)
+                       ?? throw new InvalidOperationException($"Category {existing.CategoryId} not found.");
+
+        if (category.CategoryType == CategoryType.Income)
+            account.Balance -= existing.Amount;
+        else
+            account.Balance += existing.Amount;
 
         var ok = await _appDbContext.AccountOperationRepository.DeleteAsync(id);
         if (!ok)
