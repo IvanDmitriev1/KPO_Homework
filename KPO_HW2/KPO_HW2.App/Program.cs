@@ -23,6 +23,7 @@ services.AddSingleton<ICommandMiddleware, ErrorHandlingMiddleware>();
 services.AddScoped<CreateAccountCommand>();
 services.AddScoped<EditAccountCommand>();
 services.AddScoped<DeleteAccountCommand>();
+services.AddScoped<ViewAccountDetailsCommand>();
 
 services.AddScoped<CreateCategoryCommand>();
 services.AddScoped<EditCategoryCommand>();
@@ -42,6 +43,7 @@ var menuItems = new List<CommandDescriptor>
     new("Создать счёт", typeof(CreateAccountCommand)),
     new("Редактировать счёт", typeof(EditAccountCommand)),
     new("Удалить счёт", typeof(DeleteAccountCommand)),
+    new("Посмотреть баланс и операции по счёту", typeof(ViewAccountDetailsCommand)),
 
     new("Создать категорию", typeof(CreateCategoryCommand)),
     new("Редактировать категорию", typeof(EditCategoryCommand)),

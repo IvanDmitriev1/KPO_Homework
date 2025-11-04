@@ -4,6 +4,7 @@ using KPO_HW2.Data.Extensions;
 using KPO_HW2.Exceptions;
 using Microsoft.Data.Sqlite;
 using System.Data;
+using System.Security.Principal;
 
 namespace KPO_HW2.Data.Repositories;
 
@@ -27,7 +28,11 @@ internal sealed class BankAccountRepository(ICurrentTransactionProvider provider
         }
         catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
         {
-            throw new DuplicateAccountNameException(entity.Name, ex);
+            throw new DuplicateException(
+                entityName: "BankAccount",
+                fieldName: "Name",
+                value: entity.Name,
+                innerException: ex);
         }
     }
 
@@ -108,10 +113,20 @@ internal sealed class BankAccountRepository(ICurrentTransactionProvider provider
     public async Task UpdateAsync(BankAccount entity, CancellationToken ct = default)
     {
         const string sql = "UPDATE BankAccount SET Name = @Name WHERE Id = @Id;";
-        var rows = await Connection.ExecuteAsync(
-            new CommandDefinition(sql, new { entity.Id, entity.Name }, Transaction, cancellationToken: ct));
 
-        if (rows != 1)
-            throw new DBConcurrencyException("BankAccount update failed.");
+
+        try
+        {
+            await Connection.ExecuteAsync(
+                new CommandDefinition(sql, new { entity.Id, entity.Name }, Transaction, cancellationToken: ct));
+        }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+        {
+            throw new DuplicateException(
+                entityName: "BankAccount",
+                fieldName: "Name",
+                value: entity.Name,
+                innerException: ex);
+        }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using Dapper;
 using KPO_HW2.Data.Abstractions;
+using KPO_HW2.Exceptions;
+using KPO_HW2.Models;
+using Microsoft.Data.Sqlite;
 
 namespace KPO_HW2.Data.Repositories;
 
@@ -26,23 +29,48 @@ internal class CategoryRepository(ICurrentTransactionProvider provider) : BaseRe
             INSERT INTO Category (Id, CategoryType, Name)
             VALUES (@Id, @CategoryType, @Name);
         """;
-        await Connection.ExecuteAsync(new CommandDefinition(sql, new
+
+        try
         {
-            entity.Id,
-            CategoryType = entity.CategoryType.ToString(),
-            entity.Name
-        }, Transaction, cancellationToken: ct));
+            await Connection.ExecuteAsync(new CommandDefinition(sql, new
+            {
+                entity.Id,
+                CategoryType = entity.CategoryType.ToString(),
+                entity.Name
+            }, Transaction, cancellationToken: ct));
+        }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+        {
+            throw new DuplicateException(
+                entityName: "Category",
+                fieldName: "Name",
+                value: entity.Name,
+                innerException: ex);
+
+        }
     }
 
     public async Task UpdateAsync(Category entity, CancellationToken ct = default)
     {
         const string sql = "UPDATE Category SET CategoryType = @CategoryType, Name = @Name WHERE Id = @Id;";
-        await Connection.ExecuteAsync(new CommandDefinition(sql, new
+
+        try
         {
-            entity.Id,
-            CategoryType = entity.CategoryType.ToString(),
-            entity.Name
-        }, Transaction, cancellationToken: ct));
+            await Connection.ExecuteAsync(new CommandDefinition(sql, new
+            {
+                entity.Id,
+                CategoryType = entity.CategoryType.ToString(),
+                entity.Name
+            }, Transaction, cancellationToken: ct));
+        }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+        {
+            throw new DuplicateException(
+                entityName: "Category",
+                fieldName: "Name",
+                value: entity.Name,
+                innerException: ex);
+        }
     }
 
     public async Task<bool> DeleteAsync(CategoryId id, CancellationToken ct = default)

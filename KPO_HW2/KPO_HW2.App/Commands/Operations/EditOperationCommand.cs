@@ -34,10 +34,12 @@ internal class EditOperationCommand(
             return;
         }
 
+        var categories = (await categoryService.GetAll()).ToDictionary(c => c.Id);
+
         var selected = await AnsiConsole.PromptAsync(
             new SelectionPrompt<AccountOperation>()
                 .Title("Выберите [green]операцию для редактирования[/]:")
-                .UseConverter(operation => $"{operation.DateOfOperation:yy-MM-dd} | {operation.Description} | {operation.Amount}")
+                .UseConverter(OpToString)
                 .AddChoices(operations));
 
         var newAmount = await AnsiConsole.AskAsync<decimal>(
@@ -50,5 +52,19 @@ internal class EditOperationCommand(
         await accountOperationService.UpdateOperation(selected.Id, newMoney, newDescription);
 
         AnsiConsole.MarkupLine("[green]Операция обновлена[/].");
+        return;
+
+        string OpToString(AccountOperation o)
+        {
+            var cat = categories[o.CategoryId];
+            var catName = cat.Name;
+            var catType = cat.CategoryType.ToString();
+
+            var isIncome = cat.CategoryType == CategoryType.Income;
+            var color = isIncome ? "green" : "red";
+            var sign = isIncome ? "+" : "-";
+
+            return $"{o.DateOfOperation:yyyy-MM-dd} | {catType} | [{color}]{sign}{o.Amount}[/] | {catName} | {o.Description}";
+        }
     }
 }

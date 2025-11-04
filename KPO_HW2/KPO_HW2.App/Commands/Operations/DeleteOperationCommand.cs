@@ -34,10 +34,12 @@ internal class DeleteOperationCommand(
             return;
         }
 
+        var categories = (await categoryService.GetAll()).ToDictionary(c => c.Id);
+
         var selected = await AnsiConsole.PromptAsync(
             new SelectionPrompt<AccountOperation>()
                 .Title("Выберите [red]операцию для удаления[/]:")
-                .UseConverter(operation => $"{operation.DateOfOperation:yy-MM-dd} | {operation.Description} | {operation.Amount}")
+                .UseConverter(OpToString)
                 .AddChoices(operations));
 
         var confirm = await AnsiConsole.ConfirmAsync(
@@ -48,5 +50,19 @@ internal class DeleteOperationCommand(
 
         await accountOperationService.DeleteOperation(selected.Id);
         AnsiConsole.MarkupLine("[green]Операция удалена[/].");
+        return;
+
+        string OpToString(AccountOperation o)
+        {
+            var cat = categories[o.CategoryId];
+            var catName = cat.Name;
+            var catType = cat.CategoryType.ToString();
+
+            var isIncome = cat.CategoryType == CategoryType.Income;
+            var color = isIncome ? "green" : "red";
+            var sign = isIncome ? "+" : "-";
+
+            return $"{o.DateOfOperation:yyyy-MM-dd} | {catType} | [{color}]{sign}{o.Amount}[/] | {catName} | {o.Description}";
+        }
     }
 }

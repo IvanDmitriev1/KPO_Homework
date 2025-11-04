@@ -12,15 +12,19 @@ internal class ErrorHandlingMiddleware : ICommandMiddleware
         {
             await next(ct);
         }
-        catch (DuplicateAccountNameException ex)
+        catch (DuplicateException ex)
         {
+            var entity = ex.EntityName;
+            var field = ex.FieldName;
+            var value = ex.Value;
+
             AnsiConsole.MarkupLine(
                 $"[red]Невозможно выполнить команду[/] [yellow]{command.Name}[/].");
             AnsiConsole.MarkupLine(
-                $"Имя счёта [yellow]{ex.AccountName}[/] уже используется.");
+                $"{entity} с {field} [yellow]{value}[/] уже существует.");
 
             AnsiConsole.MarkupLine(
-                "[grey]Подсказка: выберите другое имя или отредактируйте существующий счёт.[/]");
+                "[grey]Подсказка: выберите другое имя.[/]");
         }
         catch (Exception ex)
         {
