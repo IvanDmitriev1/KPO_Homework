@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using KPO_HW2.Data.Services;
 using KPO_HW2.Infrastructure.Abstractions;
-using System.ComponentModel.DataAnnotations;
-using static Dapper.SqlMapper;
 
 namespace KPO_HW2.Infrastructure.Services;
 
@@ -22,6 +20,11 @@ internal sealed class AccountService : IAccountService
     public Task<IReadOnlyList<BankAccount>> GetAllAccounts()
     {
         return _ctx.BankAccountRepository.GetAllAsync(CancellationToken.None);
+    }
+
+    public Task<BankAccount?> GetById(BankAccountId id)
+    {
+        return _ctx.BankAccountRepository.GetByIdAsync(id);
     }
 
     public async Task<BankAccountId> CreateAccount(string name, decimal initialBalance)
@@ -50,16 +53,11 @@ internal sealed class AccountService : IAccountService
         var existing = await _ctx.BankAccountRepository.GetByIdAsync(id)
                        ?? throw new InvalidOperationException($"Account {id} not found.");
 
-        var updated = new BankAccount
-        {
-            Id = existing.Id,
-            Name = newName,
-            Balance = existing.Balance
-        };
+        existing.Name = newName;
 
-        _validator.ValidateAndThrow(updated);
+        _validator.ValidateAndThrow(existing);
 
-        await _ctx.BankAccountRepository.UpdateAsync(updated);
+        await _ctx.BankAccountRepository.UpdateAsync(existing);
         await _ctx.CommitAsync();
     }
 

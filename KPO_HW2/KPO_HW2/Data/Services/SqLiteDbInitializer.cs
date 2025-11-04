@@ -34,8 +34,8 @@ internal class SqLiteDbInitializer : IDbInitializer
                            CREATE TABLE IF NOT EXISTS AccountOperation (
                                Id                     TEXT PRIMARY KEY CHECK (length(Id) = 36),
                                BankAccountId          TEXT NOT NULL,
-                               AmountMinor            INTEGER NOT NULL,
-                               CurrencyCode           TEXT NOT NULL CHECK (CurrencyCode IN ('USD','RUB')),
+                               Amount_AmountMinor     INTEGER NOT NULL,
+                               Amount_CurrencyCode    TEXT NOT NULL CHECK (Amount_CurrencyCode IN ('USD','RUB')),
                                DateOfOperation        TEXT NOT NULL,   -- ISO-8601 с часовым поясом
                                Description            TEXT NOT NULL,
                                CategoryId             TEXT NOT NULL,

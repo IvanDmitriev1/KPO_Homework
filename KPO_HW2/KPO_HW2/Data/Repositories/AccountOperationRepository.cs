@@ -15,8 +15,8 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
                 DateOfOperation,
                 Description,
                 CategoryId,
-                AmountMinor   AS AmountMinor,
-                CurrencyCode  AS CurrencyCode
+                Amount_AmountMinor   AS AmountMinor,
+                Amount_CurrencyCode  AS CurrencyCode
             FROM AccountOperation
             WHERE Id = @Id;
         """;
@@ -46,8 +46,8 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
                 DateOfOperation,
                 Description,
                 CategoryId,
-                AmountMinor   AS AmountMinor,
-                CurrencyCode  AS CurrencyCode
+                Amount_AmountMinor   AS AmountMinor,
+                Amount_CurrencyCode  AS CurrencyCode
             FROM AccountOperation
             ORDER BY DateOfOperation DESC, Id;
         """;
@@ -71,11 +71,11 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
     public async Task AddAsync(AccountOperation entity, CancellationToken ct = default)
     {
         const string sql = """
-            INSERT INTO AccountOperation
-                (Id, BankAccountId, AmountMinor, CurrencyCode, DateOfOperation, Description, CategoryId)
-            VALUES
-                (@Id, @AccountOperationType, @BankAccountId, @AmountMinor, @CurrencyCode, @DateOfOperation, @Description, @CategoryId);
-        """;
+                               INSERT INTO AccountOperation
+                                   (Id, BankAccountId, Amount_AmountMinor, Amount_CurrencyCode, DateOfOperation, Description, CategoryId)
+                               VALUES
+                                   (@Id, @BankAccountId, @Amount_AmountMinor, @Amount_CurrencyCode, @DateOfOperation, @Description, @CategoryId);
+                           """;
 
         var p = new DynamicParameters();
         p.Add("Id", entity.Id);
@@ -91,15 +91,15 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
     public async Task UpdateAsync(AccountOperation entity, CancellationToken ct = default)
     {
         const string sql = """
-            UPDATE AccountOperation
-            SET BankAccountId        = @BankAccountId,
-                AmountMinor          = @AmountMinor,
-                CurrencyCode         = @CurrencyCode,
-                DateOfOperation      = @DateOfOperation,
-                Description          = @Description,
-                CategoryId           = @CategoryId
-            WHERE Id = @Id;
-        """;
+                               UPDATE AccountOperation
+                               SET BankAccountId        = @BankAccountId,
+                                   Amount_AmountMinor   = @Amount_AmountMinor,
+                                   Amount_CurrencyCode  = @Amount_CurrencyCode,
+                                   DateOfOperation      = @DateOfOperation,
+                                   Description          = @Description,
+                                   CategoryId           = @CategoryId
+                               WHERE Id = @Id;
+                           """;
 
         var p = new DynamicParameters();
         p.Add("Id", entity.Id);
@@ -123,6 +123,50 @@ internal class AccountOperationRepository(ICurrentTransactionProvider provider) 
     {
         const string sql = "SELECT 1 FROM AccountOperation WHERE Id = @Id LIMIT 1;";
         var val = await Connection.ExecuteScalarAsync<int?>(new CommandDefinition(sql, new { Id = id }, Transaction, cancellationToken: ct));
+        return val.HasValue;
+    }
+
+    public async Task<IReadOnlyList<AccountOperation>> GetByAccount(BankAccountId accountId, CancellationToken ct)
+    {
+        const string sql = """
+                               SELECT
+                                   Id,
+                                   BankAccountId,
+                                   DateOfOperation,
+                                   Description,
+                                   CategoryId,
+                                   Amount_AmountMinor  AS AmountMinor,
+                                   Amount_CurrencyCode AS CurrencyCode
+                               FROM AccountOperation
+                               WHERE BankAccountId = @BankAccountId
+                               ORDER BY DateOfOperation DESC, Id;
+                           """;
+
+        var list = await Connection.QueryAsync<AccountOperation, Money, AccountOperation>(
+            new CommandDefinition(sql, parameters: new
+            {
+                BankAccountId = accountId,
+
+            }, transaction: Transaction, cancellationToken: ct),
+            (op, money) => new AccountOperation
+            {
+                Id = op.Id,
+                BankAccountId = op.BankAccountId,
+                Amount = money,
+                DateOfOperation = op.DateOfOperation,
+                Description = op.Description,
+                CategoryId = op.CategoryId
+            },
+            splitOn: "AmountMinor");
+
+        return list.ToList();
+    }
+
+    public async Task<bool> HasOperationsWithCategory(CategoryId categoryId, CancellationToken ct)
+    {
+        const string sql = "SELECT 1 FROM AccountOperation WHERE CategoryId = @CategoryId LIMIT 1;";
+        var val = await Connection.ExecuteScalarAsync<int?>(new CommandDefinition(sql, new { CategoryId = categoryId },
+            Transaction, cancellationToken: ct));
         return val.HasValue;
     }
 }

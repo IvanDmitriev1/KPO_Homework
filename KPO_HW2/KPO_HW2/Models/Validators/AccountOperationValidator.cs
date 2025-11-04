@@ -22,9 +22,5 @@ public class AccountOperationValidator : AbstractValidator<AccountOperation>
         RuleFor(x => x.CategoryId)
             .NotEqual(default(CategoryId))
             .WithMessage("Category ID must be specified");
-
-        RuleFor(x => x.DateOfOperation)
-            .LessThanOrEqualTo(DateTimeOffset.UtcNow)
-            .WithMessage("Operation date cannot be in the future");
     }
 }

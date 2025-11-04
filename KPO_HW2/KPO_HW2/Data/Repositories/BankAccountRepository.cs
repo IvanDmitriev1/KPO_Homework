@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using KPO_HW2.Data.Abstractions;
-using System.Data;
 using KPO_HW2.Data.Extensions;
+using KPO_HW2.Exceptions;
+using Microsoft.Data.Sqlite;
+using System.Data;
 
 namespace KPO_HW2.Data.Repositories;
 
@@ -19,7 +21,14 @@ internal sealed class BankAccountRepository(ICurrentTransactionProvider provider
         p.Add("Name", entity.Name);
         p.AddMoney("Balance", entity.Balance);
 
-        await Connection.ExecuteAsync(new CommandDefinition(sql, p, Transaction, cancellationToken: ct));
+        try
+        {
+            await Connection.ExecuteAsync(new CommandDefinition(sql, p, Transaction, cancellationToken: ct));
+        }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+        {
+            throw new DuplicateAccountNameException(entity.Name, ex);
+        }
     }
 
     public async Task<bool> DeleteAsync(BankAccountId id, CancellationToken ct = default)

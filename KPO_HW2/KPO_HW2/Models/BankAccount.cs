@@ -9,6 +9,6 @@ public readonly partial struct BankAccountId;
 public class BankAccount
 {
     public required BankAccountId Id { get; init; }
-    public required string Name { get; init; }
+    public required string Name { get; set; }
     public Money Balance { get; set; }
 }

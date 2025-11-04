@@ -10,7 +10,7 @@ public class AccountOperation
     public required AccountOperationId Id { get; init; }
     public required CategoryId CategoryId { get; init; }
     public required BankAccountId BankAccountId { get; init; }
-    public required Money Amount { get; init; }
-    public required DateTimeOffset DateOfOperation { get; init; }
-    public required string Description { get; init; }
+    public required Money Amount { get; set; }
+    public required DateTimeOffset DateOfOperation { get; set; }
+    public required string Description { get; set; }
 }

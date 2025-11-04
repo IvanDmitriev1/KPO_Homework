@@ -1,4 +1,7 @@
 ﻿using KPO_HW2.App.Commands;
+using KPO_HW2.App.Commands.Account;
+using KPO_HW2.App.Commands.Category;
+using KPO_HW2.App.Commands.Operations;
 using KPO_HW2.App.CommandsAbstractions;
 using KPO_HW2.App.Middlewares;
 using KPO_HW2.Data;
@@ -15,8 +18,19 @@ services.AddInfrastructure();
 services.AddSingleton<CommandPipeline>();
 services.AddSingleton<ICommandMiddleware, TimingMiddleware>();
 services.AddSingleton<ICommandMiddleware, ValidationExceptionMiddleware>();
+services.AddSingleton<ICommandMiddleware, ErrorHandlingMiddleware>();
 
 services.AddScoped<CreateAccountCommand>();
+services.AddScoped<EditAccountCommand>();
+services.AddScoped<DeleteAccountCommand>();
+
+services.AddScoped<CreateCategoryCommand>();
+services.AddScoped<EditCategoryCommand>();
+services.AddScoped<DeleteCategoryCommand>();
+
+services.AddScoped<CreateOperationCommand>();
+services.AddScoped<EditOperationCommand>();
+services.AddScoped<DeleteOperationCommand>();
 
 var sp = services.BuildServiceProvider();
 
@@ -26,6 +40,17 @@ await dbInitializer.Initialize();
 var menuItems = new List<CommandDescriptor>
 {
     new("Создать счёт", typeof(CreateAccountCommand)),
+    new("Редактировать счёт", typeof(EditAccountCommand)),
+    new("Удалить счёт", typeof(DeleteAccountCommand)),
+
+    new("Создать категорию", typeof(CreateCategoryCommand)),
+    new("Редактировать категорию", typeof(EditCategoryCommand)),
+    new("Удалить категорию", typeof(DeleteCategoryCommand)),
+
+    new("Создать операцию", typeof(CreateOperationCommand)),
+    new("Редактировать операцию", typeof(EditOperationCommand)),
+    new("Удалить операцию", typeof(DeleteOperationCommand)),
+
 };
 
 

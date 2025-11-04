@@ -18,6 +18,7 @@ internal class SqLiteDbContextFactory : IDbContextFactory<AppDbContext>
         SqlMapper.AddTypeHandler(new AccountOperationId.DapperTypeHandler());
         SqlMapper.AddTypeHandler(new CurrencyCodeTypeHandler());
         SqlMapper.AddTypeHandler(new EnumTypeHandler<CategoryType>());
+        SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
     }
 
     private readonly IMemoryCache _memoryCache;

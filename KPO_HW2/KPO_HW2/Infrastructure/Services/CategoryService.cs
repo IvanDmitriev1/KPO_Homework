@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using KPO_HW2.Data.Services;
 using KPO_HW2.Infrastructure.Abstractions;
-using static Dapper.SqlMapper;
 
 namespace KPO_HW2.Infrastructure.Services;
 
@@ -15,6 +14,8 @@ internal class CategoryService : ICategoryService
 
     private readonly AppDbContext _appDbContext;
     private readonly IValidator<Category> _validator;
+
+    public Task<IReadOnlyList<Category>> GetAll() => _appDbContext.CategoryRepository.GetAllAsync();
 
     public async Task<CategoryId> CreateCategory(string name, CategoryType type)
     {
@@ -38,16 +39,11 @@ internal class CategoryService : ICategoryService
         var existing = await _appDbContext.CategoryRepository.GetByIdAsync(id)
                        ?? throw new InvalidOperationException($"Category {id} not found.");
 
-        var updated = new Category
-        {
-            Id = id,
-            CategoryType = existing.CategoryType,
-            Name = newName.Trim()
-        };
+        existing.Name = newName.Trim();
 
-        _validator.ValidateAndThrow(updated);
+        _validator.ValidateAndThrow(existing);
 
-        await _appDbContext.CategoryRepository.UpdateAsync(updated);
+        await _appDbContext.CategoryRepository.UpdateAsync(existing);
         await _appDbContext.CommitAsync();
     }
 

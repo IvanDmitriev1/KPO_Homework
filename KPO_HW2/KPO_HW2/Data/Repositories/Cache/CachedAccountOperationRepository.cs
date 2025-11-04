@@ -1,5 +1,6 @@
 ﻿using KPO_HW2.Data.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
+using SQLitePCL;
 
 namespace KPO_HW2.Data.Repositories.Cache;
 
@@ -22,6 +23,8 @@ internal sealed class CachedAccountOperationRepository : IAccountOperationReposi
     private static string KAll => "AccountOperation:all";
     private static string KId(AccountOperationId id) => $"AccountOperation:id:{id}";
     private static string KExists(AccountOperationId id) => $"AccountOperation:exists:{id}";
+    private static string KByAccount(BankAccountId accountId) => $"AccountOperation:byAccount:{accountId}";
+    private static string KHasCategory(CategoryId categoryId) => $"AccountOperation:hasCategory:{categoryId}";
 
     public Task<AccountOperation?> GetByIdAsync(AccountOperationId id, CancellationToken ct = default)
         => _cache.GetOrCreateAsync(KId(id), async e =>
@@ -40,13 +43,13 @@ internal sealed class CachedAccountOperationRepository : IAccountOperationReposi
     public async Task AddAsync(AccountOperation entity, CancellationToken ct = default)
     {
         await _inner.AddAsync(entity, ct);
-        Invalidate(entity.Id);
+        Invalidate(entity);
     }
 
     public async Task UpdateAsync(AccountOperation entity, CancellationToken ct = default)
     {
         await _inner.UpdateAsync(entity, ct);
-        Invalidate(entity.Id);
+        Invalidate(entity);
     }
 
     public async Task<bool> DeleteAsync(AccountOperationId id, CancellationToken ct = default)
@@ -63,10 +66,34 @@ internal sealed class CachedAccountOperationRepository : IAccountOperationReposi
             return await _inner.ExistsAsync(id, ct);
         });
 
+    public async Task<IReadOnlyList<AccountOperation>> GetByAccount(
+        BankAccountId accountId,
+        CancellationToken ct = default)
+        => await _cache.GetOrCreateAsync(KByAccount(accountId), async e =>
+        {
+            e.SetOptions(_opts);
+            return await _inner.GetByAccount(accountId, ct);
+        }) ?? [];
+
+    public async Task<bool> HasOperationsWithCategory(
+        CategoryId categoryId,
+        CancellationToken ct = default)
+        => await _cache.GetOrCreateAsync(KHasCategory(categoryId), async e =>
+        {
+            e.SetOptions(_opts);
+            return await _inner.HasOperationsWithCategory(categoryId, ct);
+        });
+
     private void Invalidate(AccountOperationId id)
     {
         _cache.Remove(KAll);
         _cache.Remove(KId(id));
         _cache.Remove(KExists(id));
+    }
+
+    private void Invalidate(AccountOperation entity)
+    {
+        Invalidate(entity.Id);
+        _cache.Remove(KByAccount(entity.BankAccountId));
     }
 }

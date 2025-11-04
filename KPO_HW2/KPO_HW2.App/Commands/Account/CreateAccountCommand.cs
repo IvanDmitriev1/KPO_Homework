@@ -2,7 +2,7 @@
 using KPO_HW2.Infrastructure.Abstractions;
 using Spectre.Console;
 
-namespace KPO_HW2.App.Commands;
+namespace KPO_HW2.App.Commands.Account;
 
 internal class CreateAccountCommand(IAccountService accountService) : ICommand
 {
@@ -11,7 +11,7 @@ internal class CreateAccountCommand(IAccountService accountService) : ICommand
     public async Task ExecuteAsync(CancellationToken ct)
     {
         var name = AnsiConsole.Ask<string>("Введите [green]название счёта[/]:");
-        var initialBalance = AnsiConsole.Ask<decimal>("Введите [green]начальный баланс[/]:");
+        var initialBalance = await AnsiConsole.AskAsync<decimal>("Введите [green]начальный баланс[/]:");
 
         var id = await accountService.CreateAccount(name, initialBalance);
 

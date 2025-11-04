@@ -15,6 +15,14 @@ internal class AccountOperationService : IAccountOperationService
     private readonly AppDbContext _appDbContext;
     private readonly IValidator<AccountOperation> _validator;
 
+    public Task<bool> HasOperationsWithCategory(CategoryId categoryId) =>
+        _appDbContext.AccountOperationRepository.HasOperationsWithCategory(categoryId, CancellationToken.None);
+
+    public Task<IReadOnlyList<AccountOperation>> GetByAccount(BankAccountId id)
+    {
+        return _appDbContext.AccountOperationRepository.GetByAccount(id, CancellationToken.None);
+    }
+
     public async Task<AccountOperationId> CreateOperation(
         BankAccountId accountId,
         CategoryId categoryId,
@@ -45,24 +53,17 @@ internal class AccountOperationService : IAccountOperationService
         return entity.Id;
     }
 
-    public async Task UpdateOperation(AccountOperationId id, DateTimeOffset newDate, string newDesc)
+    public async Task UpdateOperation(AccountOperationId id, Money newAmount, string newDesc)
     {
         var existing = await _appDbContext.AccountOperationRepository.GetByIdAsync(id)
                        ?? throw new InvalidOperationException($"Operation {id} not found.");
 
-        var updated = new AccountOperation
-        {
-            Id = existing.Id,
-            BankAccountId = existing.BankAccountId,
-            Amount = existing.Amount,
-            DateOfOperation = newDate,
-            Description = newDesc.Trim(),
-            CategoryId = existing.CategoryId
-        };
+        existing.Amount = newAmount;
+        existing.Description = newDesc;
 
-        _validator.ValidateAndThrow(updated);
+        _validator.ValidateAndThrow(existing);
 
-        await _appDbContext.AccountOperationRepository.UpdateAsync(updated);
+        await _appDbContext.AccountOperationRepository.UpdateAsync(existing);
         await _appDbContext.CommitAsync();
     }
 

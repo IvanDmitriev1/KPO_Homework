@@ -9,5 +9,5 @@ public class Category
 {
     public required CategoryId Id { get; init; }
     public required CategoryType CategoryType { get; init; }
-    public required string Name { get; init; }
+    public required string Name { get; set; }
 }

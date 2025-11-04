@@ -26,13 +26,23 @@ internal class CategoryRepository(ICurrentTransactionProvider provider) : BaseRe
             INSERT INTO Category (Id, CategoryType, Name)
             VALUES (@Id, @CategoryType, @Name);
         """;
-        await Connection.ExecuteAsync(new CommandDefinition(sql, new { entity.Id, entity.CategoryType, entity.Name }, Transaction, cancellationToken: ct));
+        await Connection.ExecuteAsync(new CommandDefinition(sql, new
+        {
+            entity.Id,
+            CategoryType = entity.CategoryType.ToString(),
+            entity.Name
+        }, Transaction, cancellationToken: ct));
     }
 
     public async Task UpdateAsync(Category entity, CancellationToken ct = default)
     {
         const string sql = "UPDATE Category SET CategoryType = @CategoryType, Name = @Name WHERE Id = @Id;";
-        await Connection.ExecuteAsync(new CommandDefinition(sql, new { entity.Id, entity.CategoryType, entity.Name }, Transaction, cancellationToken: ct));
+        await Connection.ExecuteAsync(new CommandDefinition(sql, new
+        {
+            entity.Id,
+            CategoryType = entity.CategoryType.ToString(),
+            entity.Name
+        }, Transaction, cancellationToken: ct));
     }
 
     public async Task<bool> DeleteAsync(CategoryId id, CancellationToken ct = default)

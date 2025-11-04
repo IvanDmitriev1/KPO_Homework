@@ -2,6 +2,9 @@
 
 public interface IAccountOperationService
 {
+    Task<bool> HasOperationsWithCategory(CategoryId categoryId);
+    Task<IReadOnlyList<AccountOperation>> GetByAccount(BankAccountId id);
+
     Task<AccountOperationId> CreateOperation(
         BankAccountId accountId,
         CategoryId categoryId,
@@ -11,7 +14,7 @@ public interface IAccountOperationService
 
     Task UpdateOperation(
         AccountOperationId id,
-        DateTimeOffset newDate,
+        Money newAmount,
         string newDesc);
 
     Task DeleteOperation(AccountOperationId id);
