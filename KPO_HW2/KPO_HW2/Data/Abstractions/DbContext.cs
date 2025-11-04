@@ -11,7 +11,7 @@ internal abstract class DbContext : IAsyncDisposable, ICurrentTransactionProvide
         CurrentTransaction = connection.BeginTransaction(Isolation);
     }
 
-    private const IsolationLevel Isolation = IsolationLevel.ReadCommitted;
+    private const IsolationLevel Isolation = IsolationLevel.Serializable;
     private readonly IAsyncDbConnection _connection;
     private bool _disposed;
 

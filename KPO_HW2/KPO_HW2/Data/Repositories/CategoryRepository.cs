@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using KPO_HW2.Data.Abstractions;
-using System.Data;
 
 namespace KPO_HW2.Data.Repositories;
 

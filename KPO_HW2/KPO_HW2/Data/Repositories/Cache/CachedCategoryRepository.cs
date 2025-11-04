@@ -1,15 +1,10 @@
 ﻿using KPO_HW2.Data.Abstractions;
-using KPO_HW2.Data.Repositories;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace KPO_HW2.Data.Repositories.Cache;
 
 internal class CachedCategoryRepository : ICategoryRepository
 {
-    private readonly ICategoryRepository _inner;
-    private readonly IMemoryCache _cache;
-    private readonly MemoryCacheEntryOptions _opts;
-
     public CachedCategoryRepository(
         ICurrentTransactionProvider ctx,
         IMemoryCache cache,
@@ -19,6 +14,11 @@ internal class CachedCategoryRepository : ICategoryRepository
         _cache = cache;
         _opts = new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl ?? TimeSpan.FromMinutes(5) };
     }
+
+    private readonly ICategoryRepository _inner;
+    private readonly IMemoryCache _cache;
+    private readonly MemoryCacheEntryOptions _opts;
+
 
     private static string KAll => "Category:all";
     private static string KId(CategoryId id) => $"Category:id:{id}";

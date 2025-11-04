@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace KPO_HW2.Validators;
+namespace KPO_HW2.Models.Validators;
 
 public class CategoryValidator : AbstractValidator<Category>
 {

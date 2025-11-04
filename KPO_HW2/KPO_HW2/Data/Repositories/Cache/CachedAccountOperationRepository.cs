@@ -5,10 +5,6 @@ namespace KPO_HW2.Data.Repositories.Cache;
 
 internal sealed class CachedAccountOperationRepository : IAccountOperationRepository
 {
-    private readonly IAccountOperationRepository _inner;
-    private readonly IMemoryCache _cache;
-    private readonly MemoryCacheEntryOptions _opts;
-
     public CachedAccountOperationRepository(
         ICurrentTransactionProvider ctx,
         IMemoryCache cache,
@@ -18,6 +14,10 @@ internal sealed class CachedAccountOperationRepository : IAccountOperationReposi
         _cache = cache;
         _opts = new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl ?? TimeSpan.FromMinutes(1) };
     }
+
+    private readonly IAccountOperationRepository _inner;
+    private readonly IMemoryCache _cache;
+    private readonly MemoryCacheEntryOptions _opts;
 
     private static string KAll => "AccountOperation:all";
     private static string KId(AccountOperationId id) => $"AccountOperation:id:{id}";

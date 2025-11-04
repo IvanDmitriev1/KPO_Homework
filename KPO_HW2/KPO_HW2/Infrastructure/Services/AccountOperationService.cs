@@ -38,9 +38,7 @@ internal class AccountOperationService : IAccountOperationService
             CategoryId = categoryId
         };
 
-        var result = _validator.Validate(entity);
-        if (!result.IsValid)
-            throw new InvalidOperationException($"Validation failed: {string.Join(", ", result.Errors)}");
+        _validator.ValidateAndThrow(entity);
 
         await _appDbContext.AccountOperationRepository.AddAsync(entity);
         await _appDbContext.CommitAsync();
@@ -62,9 +60,7 @@ internal class AccountOperationService : IAccountOperationService
             CategoryId = existing.CategoryId
         };
 
-        var result = _validator.Validate(updated);
-        if (!result.IsValid)
-            throw new InvalidOperationException($"Validation failed: {string.Join(", ", result.Errors)}");
+        _validator.ValidateAndThrow(updated);
 
         await _appDbContext.AccountOperationRepository.UpdateAsync(updated);
         await _appDbContext.CommitAsync();

@@ -1,25 +1,23 @@
 ﻿using KPO_HW2.Data.Abstractions;
-using KPO_HW2.Data.Repositories;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 
 namespace KPO_HW2.Data.Repositories.Cache;
 
 internal class CachedBankAccountRepository : IBankAccountRepository
 {
-    private readonly IBankAccountRepository _inner;
-    private readonly IMemoryCache _cache;
-    private readonly MemoryCacheEntryOptions _opts;
-
     public CachedBankAccountRepository(
         ICurrentTransactionProvider ctx,
         IMemoryCache cache,
         TimeSpan? ttl = null)
     {
-        _inner = new BankAccountRepository(ctx); // внутренняя реальная реализация
+        _inner = new BankAccountRepository(ctx);
         _cache = cache;
         _opts = new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl ?? TimeSpan.FromMinutes(5) };
     }
+
+    private readonly IBankAccountRepository _inner;
+    private readonly IMemoryCache _cache;
+    private readonly MemoryCacheEntryOptions _opts;
 
     private static string KAll => "BankAccount:all";
     private static string KId(BankAccountId id) => $"BankAccount:id:{id}";

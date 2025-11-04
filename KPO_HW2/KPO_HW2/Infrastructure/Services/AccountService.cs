@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using KPO_HW2.Data.Services;
 using KPO_HW2.Infrastructure.Abstractions;
+using System.ComponentModel.DataAnnotations;
+using static Dapper.SqlMapper;
 
 namespace KPO_HW2.Infrastructure.Services;
 
@@ -17,11 +19,13 @@ internal sealed class AccountService : IAccountService
     private readonly AppDbContext _ctx;
     private readonly IValidator<BankAccount> _validator;
 
+    public Task<IReadOnlyList<BankAccount>> GetAllAccounts()
+    {
+        return _ctx.BankAccountRepository.GetAllAsync(CancellationToken.None);
+    }
+
     public async Task<BankAccountId> CreateAccount(string name, decimal initialBalance)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("Name is required.", nameof(name));
-
         var balance = Money.Create(
             amount: initialBalance,
             code: DefaultCurrency);
@@ -33,9 +37,7 @@ internal sealed class AccountService : IAccountService
             Balance = balance
         };
 
-        var result = _validator.Validate(entity);
-        if (!result.IsValid)
-            throw new InvalidOperationException($"Validation failed: {string.Join(", ", result.Errors)}");
+        _validator.ValidateAndThrow(entity);
 
         await _ctx.BankAccountRepository.AddAsync(entity);
         await _ctx.CommitAsync();
@@ -45,9 +47,6 @@ internal sealed class AccountService : IAccountService
 
     public async Task UpdateAccount(BankAccountId id, string newName)
     {
-        if (string.IsNullOrWhiteSpace(newName))
-            throw new ArgumentException("newName is required.", nameof(newName));
-
         var existing = await _ctx.BankAccountRepository.GetByIdAsync(id)
                        ?? throw new InvalidOperationException($"Account {id} not found.");
 
@@ -58,9 +57,7 @@ internal sealed class AccountService : IAccountService
             Balance = existing.Balance
         };
 
-        var result = _validator.Validate(updated);
-        if (!result.IsValid)
-            throw new InvalidOperationException($"Validation failed: {string.Join(", ", result.Errors)}");
+        _validator.ValidateAndThrow(updated);
 
         await _ctx.BankAccountRepository.UpdateAsync(updated);
         await _ctx.CommitAsync();

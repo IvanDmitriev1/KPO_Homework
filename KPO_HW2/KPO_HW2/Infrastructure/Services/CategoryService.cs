@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using KPO_HW2.Data.Services;
 using KPO_HW2.Infrastructure.Abstractions;
+using static Dapper.SqlMapper;
 
 namespace KPO_HW2.Infrastructure.Services;
 
@@ -24,9 +25,7 @@ internal class CategoryService : ICategoryService
             Name = name.Trim()
         };
 
-        var result = _validator.Validate(entity);
-        if (!result.IsValid)
-            throw new InvalidOperationException($"Validation failed: {string.Join(", ", result.Errors)}");
+        _validator.ValidateAndThrow(entity);
 
         await _appDbContext.CategoryRepository.AddAsync(entity);
         await _appDbContext.CommitAsync();
@@ -45,6 +44,8 @@ internal class CategoryService : ICategoryService
             CategoryType = existing.CategoryType,
             Name = newName.Trim()
         };
+
+        _validator.ValidateAndThrow(updated);
 
         await _appDbContext.CategoryRepository.UpdateAsync(updated);
         await _appDbContext.CommitAsync();

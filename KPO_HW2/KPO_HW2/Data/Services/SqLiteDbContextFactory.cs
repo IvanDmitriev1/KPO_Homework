@@ -27,6 +27,8 @@ internal class SqLiteDbContextFactory : IDbContextFactory<AppDbContext>
     public AppDbContext Create()
     {
         var connection = new SqliteConnection(ConnectionString);
+        connection.Open();
+
         return new AppDbContext(new SqLiteDbConnectionAdapter(connection), _memoryCache);
     }
 }
