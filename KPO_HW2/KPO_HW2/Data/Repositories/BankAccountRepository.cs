@@ -112,13 +112,20 @@ internal sealed class BankAccountRepository(ICurrentTransactionProvider provider
 
     public async Task UpdateAsync(BankAccount entity, CancellationToken ct = default)
     {
-        const string sql = "UPDATE BankAccount SET Name = @Name WHERE Id = @Id;";
+        const string sql = """
+                           UPDATE BankAccount
+                           SET Name = @Name, Balance_AmountMinor = @Balance_AmountMinor, Balance_CurrencyCode = @Balance_CurrencyCode
+                           WHERE Id = @Id;
+                           """;
 
+        var p = new DynamicParameters();
+        p.Add("Id", entity.Id);
+        p.Add("Name", entity.Name);
+        p.AddMoney("Balance", entity.Balance);
 
         try
         {
-            await Connection.ExecuteAsync(
-                new CommandDefinition(sql, new { entity.Id, entity.Name }, Transaction, cancellationToken: ct));
+            await Connection.ExecuteAsync(new CommandDefinition(sql, p, Transaction, cancellationToken: ct));
         }
         catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
         {

@@ -30,7 +30,7 @@ internal class AccountOperationService : IAccountOperationService
         DateTimeOffset date,
         string description)
     {
-        _ = await _appDbContext.BankAccountRepository.GetByIdAsync(accountId)
+        var account = await _appDbContext.BankAccountRepository.GetByIdAsync(accountId)
                       ?? throw new InvalidOperationException($"Account {accountId} not found.");
 
         _ = await _appDbContext.CategoryRepository.GetByIdAsync(categoryId)
@@ -48,7 +48,11 @@ internal class AccountOperationService : IAccountOperationService
 
         _validator.ValidateAndThrow(entity);
 
+        account.Balance += amount;
+
         await _appDbContext.AccountOperationRepository.AddAsync(entity);
+        await _appDbContext.BankAccountRepository.UpdateAsync(account);
+
         await _appDbContext.CommitAsync();
         return entity.Id;
     }
@@ -58,21 +62,39 @@ internal class AccountOperationService : IAccountOperationService
         var existing = await _appDbContext.AccountOperationRepository.GetByIdAsync(id)
                        ?? throw new InvalidOperationException($"Operation {id} not found.");
 
+        var account = await _appDbContext.BankAccountRepository.GetByIdAsync(existing.BankAccountId)
+                      ?? throw new InvalidOperationException($"Account {existing.BankAccountId} not found.");
+
+        account.Balance -= existing.Amount;
+
         existing.Amount = newAmount;
         existing.Description = newDesc;
+
+        account.Balance += newAmount;
 
         _validator.ValidateAndThrow(existing);
 
         await _appDbContext.AccountOperationRepository.UpdateAsync(existing);
+        await _appDbContext.BankAccountRepository.UpdateAsync(account);
+
         await _appDbContext.CommitAsync();
     }
 
     public async Task DeleteOperation(AccountOperationId id)
     {
+        var existing = await _appDbContext.AccountOperationRepository.GetByIdAsync(id)
+                       ?? throw new InvalidOperationException($"Operation {id} not found.");
+
+        var account = await _appDbContext.BankAccountRepository.GetByIdAsync(existing.BankAccountId)
+                      ?? throw new InvalidOperationException($"Account {existing.BankAccountId} not found.");
+
+        account.Balance -= existing.Amount;
+
         var ok = await _appDbContext.AccountOperationRepository.DeleteAsync(id);
         if (!ok)
             throw new InvalidOperationException($"Operation {id} not found or not deleted.");
 
+        await _appDbContext.BankAccountRepository.UpdateAsync(account);
         await _appDbContext.CommitAsync();
     }
 }

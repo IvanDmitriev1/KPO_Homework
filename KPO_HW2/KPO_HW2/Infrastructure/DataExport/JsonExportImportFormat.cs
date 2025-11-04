@@ -3,7 +3,7 @@ using KPO_HW2.Infrastructure.Models;
 
 namespace KPO_HW2.Infrastructure.DataExport;
 
-internal class JsonExportImportFormat : ExportImportFormatBase
+public class JsonExportImportFormat() : ExportImportFormatBase("Json")
 {
     protected override async Task<ExportImportModel> ReadAsyncCore(Stream stream)
     {

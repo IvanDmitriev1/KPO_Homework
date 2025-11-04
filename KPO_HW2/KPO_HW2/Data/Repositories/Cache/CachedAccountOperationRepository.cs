@@ -1,6 +1,5 @@
 ﻿using KPO_HW2.Data.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
-using SQLitePCL;
 
 namespace KPO_HW2.Data.Repositories.Cache;
 
@@ -13,7 +12,10 @@ internal sealed class CachedAccountOperationRepository : IAccountOperationReposi
     {
         _inner = new AccountOperationRepository(ctx);
         _cache = cache;
-        _opts = new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = ttl ?? TimeSpan.FromMinutes(1) };
+        _opts = new MemoryCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = ttl ?? TimeSpan.FromMinutes(1)
+        };
     }
 
     private readonly IAccountOperationRepository _inner;
@@ -54,9 +56,22 @@ internal sealed class CachedAccountOperationRepository : IAccountOperationReposi
 
     public async Task<bool> DeleteAsync(AccountOperationId id, CancellationToken ct = default)
     {
+        var existing = await _inner.GetByIdAsync(id, ct);
+
         var ok = await _inner.DeleteAsync(id, ct);
-        Invalidate(id);
-        return ok;
+        if (!ok)
+            return false;
+
+        if (existing is not null)
+        {
+            Invalidate(existing);
+        }
+        else
+        {
+            Invalidate(id);
+        }
+
+        return true;
     }
 
     public async Task<bool> ExistsAsync(AccountOperationId id, CancellationToken ct = default)
@@ -95,5 +110,6 @@ internal sealed class CachedAccountOperationRepository : IAccountOperationReposi
     {
         Invalidate(entity.Id);
         _cache.Remove(KByAccount(entity.BankAccountId));
+        _cache.Remove(KHasCategory(entity.CategoryId));
     }
 }

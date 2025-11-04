@@ -33,6 +33,9 @@ services.AddScoped<CreateOperationCommand>();
 services.AddScoped<EditOperationCommand>();
 services.AddScoped<DeleteOperationCommand>();
 
+services.AddScoped<ImportDataCommand>();
+services.AddScoped<ExportDataCommand>();
+
 var sp = services.BuildServiceProvider();
 
 var dbInitializer = sp.GetRequiredService<IDbInitializer>();
@@ -53,6 +56,9 @@ var menuItems = new List<CommandDescriptor>
     new("Редактировать операцию", typeof(EditOperationCommand)),
     new("Удалить операцию", typeof(DeleteOperationCommand)),
 
+    new("Импорт данных из файла", typeof(ImportDataCommand)),
+    new("Экспорт данных в файл", typeof(ExportDataCommand)),
+
 };
 
 
@@ -68,7 +74,7 @@ while (true)
             .Title("Выберите [green]операцию[/]:")
             .UseConverter(c => c.Name)
             .AddChoices(menuItems)
-            .PageSize(10));
+            .PageSize(15));
 
     await pipeline.ExecuteAsync(selected, CancellationToken.None);
 

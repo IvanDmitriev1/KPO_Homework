@@ -1,15 +1,14 @@
 ﻿using KPO_HW2.Infrastructure.Models;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using AccountOperationId = KPO_HW2.Models.AccountOperationId;
 
 namespace KPO_HW2.Infrastructure.DataExport;
 
-internal class YamlExportImportFormat : ExportImportFormatBase
+public class YamlExportImportFormat() : ExportImportFormatBase("Yaml")
 {
     private static readonly IDeserializer Deserializer =
         new DeserializerBuilder()
-            .WithNamingConvention(NullNamingConvention.Instance) // сохраняем имена свойств как в C#
+            .WithNamingConvention(NullNamingConvention.Instance)
             .WithTypeConverter(new BankAccountId.YamlTypeConverter())
             .WithTypeConverter(new CategoryId.YamlTypeConverter())
             .WithTypeConverter(new AccountOperationId.YamlTypeConverter())

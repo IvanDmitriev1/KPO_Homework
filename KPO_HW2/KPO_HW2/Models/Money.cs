@@ -23,4 +23,32 @@ public readonly record struct Money
         AmountMinor = (Int64)decimal.Round(amount * 100m, 0, MidpointRounding.AwayFromZero),
         CurrencyCode = code
     };
+
+    public static Money operator +(Money left, Money right)
+    {
+        if (left.CurrencyCode != right.CurrencyCode)
+        {
+            throw new InvalidOperationException("Cannot add Money values with different currency codes.");
+        }
+
+        return new Money
+        {
+            AmountMinor = left.AmountMinor + right.AmountMinor,
+            CurrencyCode = left.CurrencyCode
+        };
+    }
+
+    public static Money operator -(Money left, Money right)
+    {
+        if (left.CurrencyCode != right.CurrencyCode)
+        {
+            throw new InvalidOperationException("Cannot add Money values with different currency codes.");
+        }
+
+        return new Money
+        {
+            AmountMinor = left.AmountMinor - right.AmountMinor,
+            CurrencyCode = left.CurrencyCode
+        };
+    }
 }

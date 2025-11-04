@@ -2,8 +2,10 @@
 
 namespace KPO_HW2.Infrastructure.DataExport;
 
-public abstract class ExportImportFormatBase : IExportImportFormat
+public abstract class ExportImportFormatBase(string name) : IExportImportFormat
 {
+    public string Name { get; } = name;
+
     public async Task<ExportImportModel> ReadAsync(string fileName, IDataVisitor? visitor = null)
     {
         await using var stream = File.OpenRead(fileName);

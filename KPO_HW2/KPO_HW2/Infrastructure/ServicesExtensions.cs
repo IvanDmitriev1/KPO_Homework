@@ -19,6 +19,8 @@ public static class ServicesExtensions
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<ICategoryService, CategoryService>();
 
+        services.AddScoped<IExportImportService, ExportImportService>();
+
         return services;
     }
 }

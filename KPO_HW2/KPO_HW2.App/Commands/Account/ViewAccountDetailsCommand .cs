@@ -27,16 +27,6 @@ internal class ViewAccountDetailsCommand(
                 .UseConverter(a => $"{a.Name} (баланс: {a.Balance})")
                 .AddChoices(allAccounts));
 
-        var accountOps = await accountOperationService.GetByAccount(account.Id);
-        if (accountOps.Count == 0)
-        {
-            AnsiConsole.MarkupLine("[red]Нет ни одной операции[/].");
-            return;
-        }
-
-        var allCategories = await categoryService.GetAll();
-        var categoriesById = allCategories.ToDictionary(c => c.Id, c => c);
-
         var header = new Panel(
             new Markup(
                 $"Счёт: [yellow]{account.Name}[/]\n" +
@@ -47,6 +37,19 @@ internal class ViewAccountDetailsCommand(
             Header = new PanelHeader("Информация о счёте")
         };
 
+        AnsiConsole.Write(header);
+
+
+
+        var accountOps = await accountOperationService.GetByAccount(account.Id);
+        if (accountOps.Count == 0)
+        {
+            AnsiConsole.MarkupLine("[red]Нет ни одной операции[/].");
+            return;
+        }
+
+        var allCategories = await categoryService.GetAll();
+        var categoriesById = allCategories.ToDictionary(c => c.Id, c => c);
 
         var table = new Table()
             .Border(TableBorder.Rounded)
