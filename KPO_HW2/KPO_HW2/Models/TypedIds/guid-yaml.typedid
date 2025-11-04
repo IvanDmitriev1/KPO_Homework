@@ -1,0 +1,56 @@
+﻿partial struct PLACEHOLDERID
+{
+    /// <summary>
+    /// YAML-конвертер для PLACEHOLDERID: сериализует как строковый Guid (формат "D").
+    /// Поддерживает чтение из скаляра (string) и резервно — десериализацию Guid через rootDeserializer.
+    /// </summary>
+    public sealed class YamlTypeConverter : global::YamlDotNet.Serialization.IYamlTypeConverter
+    {
+        public bool Accepts(global::System.Type type)
+            => type == typeof(PLACEHOLDERID);
+
+        public object? ReadYaml(
+            global::YamlDotNet.Core.IParser parser,
+            global::System.Type type,
+            global::YamlDotNet.Serialization.ObjectDeserializer rootDeserializer)
+        {
+            if (parser?.Current is global::YamlDotNet.Core.Events.Scalar scalar)
+            {
+                parser.MoveNext();
+
+                var text = scalar.Value;
+                if (!string.IsNullOrEmpty(text) && global::System.Guid.TryParse(text, out var guid))
+                    return new PLACEHOLDERID(guid);
+
+                throw new global::System.InvalidCastException(
+                    $"YAML scalar \"{text}\" не является корректным Guid для {nameof(PLACEHOLDERID)}.");
+            }
+
+            var obj = rootDeserializer(typeof(global::System.Guid));
+            return obj switch
+            {
+                global::System.Guid g => new PLACEHOLDERID(g),
+                string s when !string.IsNullOrEmpty(s) && global::System.Guid.TryParse(s, out var g2) => new PLACEHOLDERID(g2),
+                _ => throw new global::System.InvalidCastException(
+                        $"Невозможно десериализовать YAML-узел в {nameof(PLACEHOLDERID)} (тип узла: {obj?.GetType().FullName ?? "null"}).")
+            };
+        }
+
+        public void WriteYaml(
+            global::YamlDotNet.Core.IEmitter emitter,
+            object? value,
+            global::System.Type type,
+            global::YamlDotNet.Serialization.ObjectSerializer serializer)
+        {
+            if (value is null)
+            {
+                emitter.Emit(new global::YamlDotNet.Core.Events.Scalar("null"));
+                return;
+            }
+
+            var id = (PLACEHOLDERID)value;
+            var s = id.Value.ToString("D");
+            emitter.Emit(new global::YamlDotNet.Core.Events.Scalar(s));
+        }
+    }
+}
