@@ -58,7 +58,6 @@ var menuItems = new List<CommandDescriptor>
 
     new("Импорт данных из файла", typeof(ImportDataCommand)),
     new("Экспорт данных в файл", typeof(ExportDataCommand)),
-
 };
 
 
@@ -69,7 +68,7 @@ while (true)
 {
     AnsiConsole.Clear();
 
-    var selected = AnsiConsole.Prompt(
+    var selected = await AnsiConsole.PromptAsync(
         new SelectionPrompt<CommandDescriptor>()
             .Title("Выберите [green]операцию[/]:")
             .UseConverter(c => c.Name)
