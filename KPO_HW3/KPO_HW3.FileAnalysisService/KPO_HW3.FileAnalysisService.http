@@ -1,0 +1,6 @@
+@KPO_HW3.FileAnalysisService_HostAddress = http://localhost:5182
+
+GET {{KPO_HW3.FileAnalysisService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

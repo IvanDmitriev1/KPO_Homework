@@ -1,0 +1,6 @@
+@KPO_HW3.FileStorageService_HostAddress = http://localhost:5053
+
+GET {{KPO_HW3.FileStorageService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

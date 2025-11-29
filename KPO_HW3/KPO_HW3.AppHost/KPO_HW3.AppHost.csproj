@@ -1,0 +1,22 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.0.1">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>a1f2fd13-7ce1-413d-8510-3ac7e3b09c32</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Docker" Version="13.0.1-preview.1.25575.3" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KPO_HW3.FileAnalysisService\KPO_HW3.FileAnalysisService.csproj" />
+    <ProjectReference Include="..\KPO_HW3.FileStorageService\KPO_HW3.FileStorageService.csproj" />
+    <ProjectReference Include="..\KPO_HW3.Api\KPO_HW3.Api.csproj" />
+  </ItemGroup>
+
+</Project>
