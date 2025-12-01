@@ -400,3 +400,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 KPO_HW3/deploy/docker-compose.yaml
+/KPO_HW3/KPO_HW3.FileStorageService/data

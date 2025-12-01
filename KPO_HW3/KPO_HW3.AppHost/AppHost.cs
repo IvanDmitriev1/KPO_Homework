@@ -15,10 +15,11 @@ var env = builder.AddDockerComposeEnvironment("docker")
         dashboard.WithForwardedHeaders(true);
     });
 
+string fileStorageVolumeTarget = builder.ExecutionContext.IsPublishMode ? "/app/data" : string.Empty;
+
 var postgres = builder.AddPostgres("db")
     .WithDataVolume()
-    .WithLifetime(ContainerLifetime.Persistent)
-    .WithComputeEnvironment(env);
+    .WithLifetime(ContainerLifetime.Persistent);
 
 var fileStorageDb = postgres.AddDatabase("file-storage-db");
 var fileAnalysisDb = postgres.AddDatabase("file-analysis-db");
@@ -26,12 +27,13 @@ var fileAnalysisDb = postgres.AddDatabase("file-analysis-db");
 var fileStorageService = builder.AddProject<Projects.KPO_HW3_FileStorageService>("file-storage")
     .WithReference(fileStorageDb)
     .WaitFor(fileStorageDb)
+    .WithEnvironment("FileStorage__RootPath", fileStorageVolumeTarget)
     .PublishAsDockerComposeService((resource, service) =>
     {
         service.Volumes.Add(new Volume
         {
             Name = "file-storage-data",
-            Target = "/app/data",
+            Target = fileStorageVolumeTarget,
             Type = "volume",
             ReadOnly = false
         });
