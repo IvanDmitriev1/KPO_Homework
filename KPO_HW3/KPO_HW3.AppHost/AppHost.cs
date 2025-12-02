@@ -41,6 +41,7 @@ var fileStorageService = builder.AddProject<Projects.KPO_HW3_FileStorageService>
 
 var fileAnalysis = builder.AddProject<Projects.KPO_HW3_FileAnalysisService>("file-analysis")
     .WithReference(fileAnalysisDb)
+    .WithReference(fileStorageService)
     .WaitFor(fileAnalysisDb)
     .WaitFor(fileStorageService)
     .PublishAsDockerComposeService((resource, service) =>
