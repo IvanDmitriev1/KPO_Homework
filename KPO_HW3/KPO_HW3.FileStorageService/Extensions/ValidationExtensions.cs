@@ -1,3 +1,4 @@
+using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,6 @@ internal static class ValidationExtensions
     {
         var problem = new ProblemDetails
         {
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
             Title = "One or more validation errors occurred.",
             Status = StatusCodes.Status400BadRequest,
             Instance = httpContext.Request.Path
@@ -23,6 +23,27 @@ internal static class ValidationExtensions
             );
 
         problem.Extensions["errors"] = errors;
+
+        return problem;
+    }
+
+    public static ProblemDetails ToProblemDetails(this ValidationException ex, HttpContext httpContext)
+    {
+        var problem = new ProblemDetails
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Validation failed.",
+            Detail = "See errors for details.",
+            Instance = httpContext.Request.Path,
+            Extensions =
+            {
+                ["errors"] = ex.Errors.Select(static e => new
+                {
+                    e.PropertyName,
+                    e.ErrorMessage
+                })
+            }
+        };
 
         return problem;
     }

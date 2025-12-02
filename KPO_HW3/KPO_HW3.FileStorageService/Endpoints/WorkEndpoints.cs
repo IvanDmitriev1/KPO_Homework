@@ -1,11 +1,9 @@
-using FluentValidation;
 using KPO_HW3.FileStorageService.Extensions;
 using KPO_HW3.FileStorageService.Infrastructure.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
-using System.Threading;
 
 namespace KPO_HW3.FileStorageService.Endpoints;
 
@@ -77,13 +75,11 @@ public static class WorkEndpoints
         return TypedResults.File(stream, "application/octet-stream", Path.GetFileName(work.FilePath));
     }
 
-    [ProducesResponseType<Work>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Work>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<Created<Work>, BadRequest<ProblemDetails>>> PostUploadWork(
+    public static async Task<IResult> PostUploadWork(
     HttpContext httpContext,
-    [FromServices] FileStorageDbContext dbContext,
-    [FromServices] IFileStorage fileStorage,
-    [FromServices] IValidator<Work> validator,
+    [FromServices] IWorkService workService,
     [FromForm(Name = nameof(studentId)), Description("Student id")] Guid studentId,
     [FromForm(Name = nameof(assignmentId)), Description("Assignment id")] Guid assignmentId,
     [FromForm(Name = nameof(file))] IFormFile file,
@@ -95,39 +91,14 @@ public static class WorkEndpoints
             return TypedResults.BadRequest(problem);
         }
 
-        bool exists =
-            await dbContext.Works.AnyAsync(w =>
-                w.StudentId == studentId || w.AssignmentId == assignmentId, ct);
-        if (exists)
-        {
-            var problem = httpContext.CreateProblem(StatusCodes.Status400BadRequest, "Work already exists");
-            return TypedResults.BadRequest(problem);
-        }
-
         await using var fileStream = file.OpenReadStream();
-        var storedFilePath = await fileStorage.SaveAsync(fileStream, Path.GetExtension(file.FileName), ct);
+        var result =
+            await workService.UploadAsync(studentId, assignmentId, Path.GetExtension(file.FileName), fileStream, ct);
 
-        var work = new Work
-        {
-            Id = Guid.NewGuid(),
-            StudentId = studentId,
-            AssignmentId = assignmentId,
-            FilePath = storedFilePath,
-            CreatedAt = DateTimeOffset.UtcNow
-        };
+        if (!result.IsSuccessful)
+            return result.ToHttpResult(httpContext);
 
-        var validationResult = validator.Validate(work);
-        if (!validationResult.IsValid)
-        {
-            await fileStorage.DeleteAsync(storedFilePath, ct);
-
-            var problem = validationResult.ToProblemDetails(httpContext);
-            return TypedResults.BadRequest(problem);
-        }
-
-        dbContext.Works.Add(work);
-        await dbContext.SaveChangesAsync(ct);
-
+        var work = result.Value;
         var location = $"works/{work.Id}";
         return TypedResults.Created(location, work);
     }

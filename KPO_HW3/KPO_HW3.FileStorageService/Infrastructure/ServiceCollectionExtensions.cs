@@ -16,8 +16,6 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<IHostEnvironment>(),
                 configuration["FileStorage:RootPath"]));
 
-        services.AddScoped<IValidator<Work>, WorkValidator>();
-
         return services;
     }
 }

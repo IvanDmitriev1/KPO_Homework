@@ -12,15 +12,20 @@ public class FileStorageDbContext(DbContextOptions<FileStorageDbContext> options
 
         modelBuilder.Entity<Work>(builder =>
         {
-            builder.ToTable("works");
             builder.HasKey(w => w.Id);
 
-            builder.Property(w => w.StudentId).IsRequired();
-            builder.Property(w => w.AssignmentId).IsRequired();
-            builder.Property(w => w.CreatedAt).IsRequired();
+            builder.Property(w => w.Id)
+                .ValueGeneratedOnAdd();
+
             builder.Property(w => w.FilePath)
-                .HasMaxLength(512)
+                .HasMaxLength(512);
+
+            builder.Property(w => w.AssignmentId)
                 .IsRequired();
+
+            builder.Property(w => w.CreatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("now()");
         });
     }
 }

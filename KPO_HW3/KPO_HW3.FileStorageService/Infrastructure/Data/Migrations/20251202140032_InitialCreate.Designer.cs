@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(FileStorageDbContext))]
-    [Migration("20251201150033_InitialCreate")]
+    [Migration("20251202140032_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -35,7 +35,9 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<string>("FilePath")
                         .IsRequired()
@@ -47,7 +49,7 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("works", (string)null);
+                    b.ToTable("Works");
                 });
 #pragma warning restore 612, 618
         }

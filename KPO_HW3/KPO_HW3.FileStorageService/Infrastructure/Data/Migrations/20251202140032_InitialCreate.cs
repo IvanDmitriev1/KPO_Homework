@@ -12,18 +12,18 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "works",
+                name: "Works",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     StudentId = table.Column<Guid>(type: "uuid", nullable: false),
                     AssignmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     FilePath = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_works", x => x.Id);
+                    table.PrimaryKey("PK_Works", x => x.Id);
                 });
         }
 
@@ -31,7 +31,7 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "works");
+                name: "Works");
         }
     }
 }
