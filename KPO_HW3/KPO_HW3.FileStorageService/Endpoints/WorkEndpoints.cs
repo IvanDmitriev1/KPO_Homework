@@ -105,7 +105,7 @@ public static class WorkEndpoints
         }
 
         await using var fileStream = file.OpenReadStream();
-        var storedFilePath = await fileStorage.SaveAsync(fileStream, ct);
+        var storedFilePath = await fileStorage.SaveAsync(fileStream, Path.GetExtension(file.FileName), ct);
 
         var work = new Work
         {

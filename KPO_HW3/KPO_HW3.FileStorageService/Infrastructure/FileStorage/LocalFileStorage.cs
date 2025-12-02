@@ -13,9 +13,9 @@ public class LocalFileStorage : IFileStorage
 
     private readonly string _root;
 
-    public async Task<string> SaveAsync(Stream content, CancellationToken cancellationToken = default)
+    public async Task<string> SaveAsync(Stream content, string extention, CancellationToken cancellationToken = default)
     {
-        var newFileName = Guid.NewGuid().ToString("N");
+        var newFileName = $"{Guid.NewGuid():N}{extention}";
         var fullPath = Path.Combine(_root, newFileName);
 
         await using var fileStream = new FileStream(fullPath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
