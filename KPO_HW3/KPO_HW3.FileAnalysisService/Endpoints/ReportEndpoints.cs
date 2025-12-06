@@ -1,12 +1,10 @@
 using DotNext;
-using KPO_HW3.FileAnalysisService.Domain.Entities;
-using KPO_HW3.FileAnalysisService.Domain.Interfaces;
-using KPO_HW3.FileAnalysisService.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using KPO_HW3.FileAnalysisService.Infrastructure.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using KPO_HW3.FileAnalysisService.Infrastructure.Extensions;
 
 namespace KPO_HW3.FileAnalysisService.Endpoints;
 

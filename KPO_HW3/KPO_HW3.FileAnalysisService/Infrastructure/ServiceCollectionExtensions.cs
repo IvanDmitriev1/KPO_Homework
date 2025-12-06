@@ -1,7 +1,5 @@
-using KPO_HW3.FileAnalysisService.Application.WorkAccess;
-using KPO_HW3.FileAnalysisService.Domain.Interfaces;
 using KPO_HW3.FileAnalysisService.Infrastructure.Data;
-using KPO_HW3.FileAnalysisService.Infrastructure.External;
+using KPO_HW3.FileAnalysisService.Services;
 
 namespace KPO_HW3.FileAnalysisService.Infrastructure;
 

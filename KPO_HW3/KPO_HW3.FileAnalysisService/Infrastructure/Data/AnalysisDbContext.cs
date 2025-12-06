@@ -1,4 +1,3 @@
-using KPO_HW3.FileAnalysisService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace KPO_HW3.FileAnalysisService.Infrastructure.Data;

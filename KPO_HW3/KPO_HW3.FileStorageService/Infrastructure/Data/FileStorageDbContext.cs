@@ -1,3 +1,4 @@
+using KPO_HW3.FileStorageService.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace KPO_HW3.FileStorageService.Infrastructure.Data;

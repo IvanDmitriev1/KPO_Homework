@@ -1,9 +1,7 @@
-using KPO_HW3.FileAnalysisService.Application.Services;
-using KPO_HW3.FileAnalysisService.Domain.Entities;
-using KPO_HW3.FileAnalysisService.Domain.Interfaces;
 using KPO_HW3.FileAnalysisService.Endpoints;
 using KPO_HW3.FileAnalysisService.Infrastructure;
 using KPO_HW3.FileAnalysisService.Infrastructure.Data;
+using KPO_HW3.FileAnalysisService.Services;
 using KPO_HW3.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
