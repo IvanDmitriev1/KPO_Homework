@@ -1,9 +1,8 @@
 using DotNext;
-using KPO_HW3.FileStorageService.Models;
 
 namespace KPO_HW3.FileStorageService.Abstractions;
 
-public interface IWorkService
+public interface IWorkSubmissionService
 {
     Task<Result<Work>> UploadAsync(
         Guid studentId,

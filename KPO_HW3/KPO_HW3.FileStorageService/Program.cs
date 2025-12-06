@@ -13,7 +13,7 @@ builder.AddInfrastructure();
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<IWorkService, WorkService>();
+builder.Services.AddScoped<IWorkSubmissionService, WorkSubmissionService>();
 
 builder.Services.AddSingleton<IFileStorage>(sp =>
     new MinioFileStorage(

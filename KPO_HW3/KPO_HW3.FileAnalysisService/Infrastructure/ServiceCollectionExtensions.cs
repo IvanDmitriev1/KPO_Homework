@@ -9,12 +9,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddHostedService<Migrator>();
 
-        services.AddHttpClient<IFileStorageApi, HttpFileStorageApi>(client =>
-            {
-                const string baseUrl = "https+http://file-storage";
-                client.BaseAddress = new Uri(baseUrl);
-            });
-
         return services;
     }
 }

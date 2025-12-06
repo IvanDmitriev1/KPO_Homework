@@ -1,18 +1,15 @@
-using Aspire.Hosting;
-using Aspire.Hosting.Docker.Resources.ServiceNodes;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 var env = builder.AddDockerComposeEnvironment("docker")
     .WithProperties(env =>
     {
         env.DefaultNetworkName = "my-network";
-        env.RequiresImageBuildAndPush();
+        //env.RequiresImageBuildAndPush();
     })
     .WithDashboard(dashboard =>
     {
         dashboard.WithHostPort(18888);
-        dashboard.WithForwardedHeaders(true);
+        dashboard.WithForwardedHeaders();
     });
 
 var minio = builder.AddMinioContainer("minio");
@@ -31,6 +28,7 @@ var fileStorageService = builder.AddProject<Projects.KPO_HW3_FileStorageService>
     .WaitFor(minio)
     .PublishAsDockerComposeService((resource, service) =>
     {
+
     });
 
 var fileAnalysis = builder.AddProject<Projects.KPO_HW3_FileAnalysisService>("file-analysis")
@@ -48,6 +46,7 @@ builder.AddProject<Projects.KPO_HW3_Api>("api")
     .WaitFor(fileAnalysis)
     .PublishAsDockerComposeService((resource, service) =>
     {
+        service.Ports.Add("8080:8080");
     });
 
 builder.Build().Run();

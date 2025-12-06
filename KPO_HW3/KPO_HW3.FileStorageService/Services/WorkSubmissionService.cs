@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KPO_HW3.FileStorageService.Services;
 
-public class WorkService(
+public class WorkSubmissionService(
     IFileStorage fileStorage,
-    FileStorageDbContext dbContext) : IWorkService
+    FileStorageDbContext dbContext) : IWorkSubmissionService
 {
     public async Task<Result<Work>> UploadAsync(Guid studentId, Guid assignmentId, IFormFile file, CancellationToken ct = default)
     {

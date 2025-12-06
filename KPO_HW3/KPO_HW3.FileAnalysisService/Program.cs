@@ -13,6 +13,11 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 
+builder.Services.AddHttpClient<IFileStorageApi, HttpFileStorageApi>(client =>
+{
+    client.BaseAddress = new Uri("https+http://file-storage");
+});
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();

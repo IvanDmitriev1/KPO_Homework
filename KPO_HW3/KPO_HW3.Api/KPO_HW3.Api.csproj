@@ -10,12 +10,18 @@
     <UserSecretsId>aed73381-467e-41db-8cbb-82fd7505628a</UserSecretsId>
   </PropertyGroup>
 
-	<ItemGroup>
-		<ContainerPort Include="8081" />
-	</ItemGroup>
+	<PropertyGroup>
+		<OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)</OpenApiDocumentsDirectory>
+		<OpenApiGenerateDocuments>true</OpenApiGenerateDocuments>
+	</PropertyGroup>
 	
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="10.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Scalar.AspNetCore" Version="2.11.1" />
   </ItemGroup>
 
   <ItemGroup>

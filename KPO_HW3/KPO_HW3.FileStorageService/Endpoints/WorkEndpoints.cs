@@ -90,7 +90,7 @@ public static class WorkEndpoints
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     public static async Task<IResult> PostUploadWork(
     HttpContext httpContext,
-    [FromServices] IWorkService workService,
+    [FromServices] IWorkSubmissionService workSubmissionService,
     [FromForm(Name = nameof(studentId)), Description("Student id")] Guid studentId,
     [FromForm(Name = nameof(assignmentId)), Description("Assignment id")] Guid assignmentId,
     [FromForm(Name = nameof(file))] IFormFile file,
@@ -103,7 +103,7 @@ public static class WorkEndpoints
         }
 
         var result =
-            await workService.UploadAsync(studentId, assignmentId, file, ct);
+            await workSubmissionService.UploadAsync(studentId, assignmentId, file, ct);
 
         if (!result.IsSuccessful)
             return result.ToHttpResult(httpContext);
