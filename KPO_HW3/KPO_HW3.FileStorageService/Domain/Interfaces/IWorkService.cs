@@ -7,7 +7,6 @@ public interface IWorkService
     Task<Result<Work>> UploadAsync(
         Guid studentId,
         Guid assignmentId,
-        string fileExtension,
-        Stream fileContent,
+        IFormFile file,
         CancellationToken ct = default);
 }

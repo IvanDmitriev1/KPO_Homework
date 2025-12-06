@@ -17,7 +17,7 @@ public class FileStorageDbContext(DbContextOptions<FileStorageDbContext> options
             builder.Property(w => w.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(w => w.FilePath)
+            builder.Property(w => w.FileId)
                 .HasMaxLength(512);
 
             builder.Property(w => w.AssignmentId)

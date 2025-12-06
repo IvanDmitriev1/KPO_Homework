@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(FileStorageDbContext))]
-    [Migration("20251202140032_InitialCreate")]
+    [Migration("20251206153009_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -39,7 +39,7 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<string>("FilePath")
+                    b.Property<string>("FileId")
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");

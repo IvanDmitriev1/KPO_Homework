@@ -54,25 +54,34 @@ public static class WorkEndpoints
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<FileStreamHttpResult, NotFound, BadRequest<ProblemDetails>>> GetWorkContent(
-        HttpContext httpContext,
+    public static async Task<Results<PushStreamHttpResult, NotFound, BadRequest<ProblemDetails>>> GetWorkContent(
         [FromServices] FileStorageDbContext dbContext,
         [FromServices] IFileStorage fileStorage,
-        [Description("The work id")] Guid id)
+        [Description("The work id")] Guid id,
+        CancellationToken ct)
     {
-        var work = await dbContext.Works.AsNoTracking().FirstOrDefaultAsync(w => w.Id == id);
+        var work = await dbContext.Works.AsNoTracking().FirstOrDefaultAsync(w => w.Id == id, cancellationToken: ct);
         if (work is null)
         {
             return TypedResults.NotFound();
         }
 
-        var stream = fileStorage.GetAsync(work.FilePath, httpContext.RequestAborted);
-        if (stream is null)
+        var fileInfo = await fileStorage.GetFileInfoAsync(work.FileId, ct);
+        if (fileInfo is null)
         {
             return TypedResults.NotFound();
         }
 
-        return TypedResults.File(stream, "application/octet-stream", Path.GetFileName(work.FilePath));
+        var result = TypedResults.Stream(
+            async responseStream =>
+            {
+                await fileStorage.GetAsync(work.FileId, responseStream, ct);
+            },
+            contentType: fileInfo.ContentType,
+            fileDownloadName: fileInfo.FileName
+        );
+
+        return result;
     }
 
     [ProducesResponseType<Work>(StatusCodes.Status201Created)]
@@ -91,9 +100,8 @@ public static class WorkEndpoints
             return TypedResults.BadRequest(problem);
         }
 
-        await using var fileStream = file.OpenReadStream();
         var result =
-            await workService.UploadAsync(studentId, assignmentId, Path.GetExtension(file.FileName), fileStream, ct);
+            await workService.UploadAsync(studentId, assignmentId, file, ct);
 
         if (!result.IsSuccessful)
             return result.ToHttpResult(httpContext);

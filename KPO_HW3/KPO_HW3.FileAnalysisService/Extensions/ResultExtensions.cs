@@ -1,9 +1,6 @@
 using DotNext;
-using FluentValidation;
 using KPO_HW3.FileAnalysisService.Domain.Exceptions;
 using System.Runtime.ExceptionServices;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 
 namespace KPO_HW3.FileAnalysisService.Extensions;
 
@@ -18,10 +15,6 @@ public static class ResultExtensions
         {
             case WorkNotFoundException:
                 return TypedResults.NotFound();
-
-            case ValidationException validationException:
-                var validationProblem = validationException.ToProblemDetails(httpContext);
-                return TypedResults.BadRequest(validationProblem);
         }
 
         ExceptionDispatchInfo.Throw(result.Error);

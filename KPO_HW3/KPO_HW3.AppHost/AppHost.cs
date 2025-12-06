@@ -15,7 +15,7 @@ var env = builder.AddDockerComposeEnvironment("docker")
         dashboard.WithForwardedHeaders(true);
     });
 
-string fileStorageVolumeTarget = builder.ExecutionContext.IsPublishMode ? "/app/data" : string.Empty;
+var minio = builder.AddMinioContainer("minio");
 
 var postgres = builder.AddPostgres("db")
     .WithDataVolume()
@@ -26,17 +26,11 @@ var fileAnalysisDb = postgres.AddDatabase("file-analysis-db");
 
 var fileStorageService = builder.AddProject<Projects.KPO_HW3_FileStorageService>("file-storage")
     .WithReference(fileStorageDb)
+    .WithReference(minio)
     .WaitFor(fileStorageDb)
-    .WithEnvironment("FileStorage__RootPath", fileStorageVolumeTarget)
+    .WaitFor(minio)
     .PublishAsDockerComposeService((resource, service) =>
     {
-        service.Volumes.Add(new Volume
-        {
-            Name = "file-storage-data",
-            Target = fileStorageVolumeTarget,
-            Type = "volume",
-            ReadOnly = false
-        });
     });
 
 var fileAnalysis = builder.AddProject<Projects.KPO_HW3_FileAnalysisService>("file-analysis")
@@ -46,7 +40,6 @@ var fileAnalysis = builder.AddProject<Projects.KPO_HW3_FileAnalysisService>("fil
     .WaitFor(fileStorageService)
     .PublishAsDockerComposeService((resource, service) =>
     {
-        
     });
 
 builder.AddProject<Projects.KPO_HW3_Api>("api")
@@ -55,7 +48,6 @@ builder.AddProject<Projects.KPO_HW3_Api>("api")
     .WaitFor(fileAnalysis)
     .PublishAsDockerComposeService((resource, service) =>
     {
-        
     });
 
 builder.Build().Run();

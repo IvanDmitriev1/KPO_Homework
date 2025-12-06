@@ -36,7 +36,7 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<string>("FilePath")
+                    b.Property<string>("FileId")
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");

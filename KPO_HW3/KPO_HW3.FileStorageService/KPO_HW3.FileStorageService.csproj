@@ -16,8 +16,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.0.1" />
+		<PackageReference Include="CommunityToolkit.Aspire.Minio.Client" Version="13.0.1-beta.468" />
 		<PackageReference Include="DotNext" Version="5.26.1" />
-		<PackageReference Include="FluentValidation" Version="12.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
 		  <PrivateAssets>all</PrivateAssets>

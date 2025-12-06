@@ -1,5 +1,3 @@
-using FluentValidation;
-
 namespace KPO_HW3.FileAnalysisService.Domain.Entities;
 
 

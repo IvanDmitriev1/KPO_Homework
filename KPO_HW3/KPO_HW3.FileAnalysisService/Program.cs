@@ -1,4 +1,3 @@
-using FluentValidation;
 using KPO_HW3.FileAnalysisService.Application.Services;
 using KPO_HW3.FileAnalysisService.Domain.Entities;
 using KPO_HW3.FileAnalysisService.Domain.Interfaces;

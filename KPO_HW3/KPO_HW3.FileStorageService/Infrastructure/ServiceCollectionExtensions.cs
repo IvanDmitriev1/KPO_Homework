@@ -1,21 +1,25 @@
-using FluentValidation;
 using KPO_HW3.FileStorageService.Infrastructure.Data;
 using KPO_HW3.FileStorageService.Infrastructure.FileStorage;
-using System;
+using Minio;
 
 namespace KPO_HW3.FileStorageService.Infrastructure;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static TBuilder AddInfrastructure<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
-        services.AddHostedService<Migrator>();
+        builder.AddNpgsqlDbContext<FileStorageDbContext>("file-storage-db");
+        builder.AddMinioClient("minio");
 
-        services.AddSingleton<IFileStorage>(sp =>
-            new LocalFileStorage(
-                sp.GetRequiredService<IHostEnvironment>(),
-                configuration["FileStorage:RootPath"]));
+        builder.Services.AddHostedService<Migrator>();
 
-        return services;
+        var c = builder.Configuration;
+
+        builder.Services.AddSingleton<IFileStorage>(sp =>
+            new MinioFileStorage(
+                sp.GetRequiredService<IMinioClient>(),
+                "files"));
+
+        return builder;
     }
 }

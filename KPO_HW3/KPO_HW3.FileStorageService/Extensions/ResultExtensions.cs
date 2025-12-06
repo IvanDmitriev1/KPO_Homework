@@ -1,6 +1,5 @@
 using System.Runtime.ExceptionServices;
 using DotNext;
-using FluentValidation;
 using KPO_HW3.FileStorageService.Domain.Exceptions;
 
 namespace KPO_HW3.FileStorageService.Extensions;
@@ -16,10 +15,8 @@ public static class ResultExtensions
         {
             case WorkNotFoundException:
                 return TypedResults.NotFound();
-
-            case ValidationException validationException:
-                var validationProblem = validationException.ToProblemDetails(httpContext);
-                return TypedResults.BadRequest(validationProblem);
+            case WorkAlreadyExistsException:
+                return TypedResults.Conflict();
         }
 
         ExceptionDispatchInfo.Throw(result.Error);
