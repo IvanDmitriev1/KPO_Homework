@@ -38,7 +38,7 @@ public static class WordCloudEndpoints
         var result = TypedResults.Stream(
             async output =>
             {
-                await using (stream) ;
+                await using var _ = stream;
                 await stream.CopyToAsync(output, ct);
             },
             contentType: "image/png"

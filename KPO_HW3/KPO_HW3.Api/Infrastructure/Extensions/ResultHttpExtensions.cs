@@ -17,6 +17,8 @@ public static class ResultHttpExtensions
                 return TypedResults.NotFound();
             case WorkAlreadyExistsException:
                 return TypedResults.Conflict();
+            case DownstreamHttpException e:
+                return TypedResults.Problem(statusCode: (int)e.StatusCode);
         }
 
         ExceptionDispatchInfo.Throw(result.Error);

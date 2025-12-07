@@ -17,7 +17,7 @@ public class QuickChartWordCloudService(
         if (!fileResponseResult.TryGet(out var fileResponse))
             return Result.FromException<Stream>(fileResponseResult.Error!);
 
-        using (fileResponse) ;
+        using var _ = fileResponse;
 
         await using var workStream = await fileResponse.Content.ReadAsStreamAsync(ct);
         using var reader = new StreamReader(

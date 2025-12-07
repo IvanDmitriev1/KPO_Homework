@@ -1,4 +1,5 @@
 using KPO_HW3.FileStorageService.Infrastructure.Data;
+using KPO_HW3.FileStorageService.Infrastructure.Data.Entities;
 using KPO_HW3.FileStorageService.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -74,7 +75,7 @@ public static class WorkEndpoints
                 await fileStorage.GetAsync(work.FileId, responseStream, ct);
             },
             contentType: fileInfo.ContentType,
-            fileDownloadName: fileInfo.FileName
+            fileDownloadName: work.OriginalFileName
         );
 
         return result;
@@ -90,6 +91,12 @@ public static class WorkEndpoints
     [FromForm(Name = nameof(file))] IFormFile file,
     CancellationToken ct)
     {
+        if (file.Length == 0)
+        {
+            return TypedResults.BadRequest(
+                httpContext.CreateProblem(StatusCodes.Status400BadRequest, "File is empty."));
+        }
+
         if (file.Length > 20 * 1024 * 1024) // 20MB
         {
             var problem = httpContext.CreateProblem(StatusCodes.Status400BadRequest, "File is too large.");

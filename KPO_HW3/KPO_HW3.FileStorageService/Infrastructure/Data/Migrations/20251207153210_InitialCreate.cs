@@ -19,7 +19,8 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
                     StudentId = table.Column<Guid>(type: "uuid", nullable: false),
                     AssignmentId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
-                    FileId = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false)
+                    OriginalFileName = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: false),
+                    FileId = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()")
                 },
                 constraints: table =>
                 {

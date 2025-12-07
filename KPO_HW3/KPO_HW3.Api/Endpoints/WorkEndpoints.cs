@@ -98,21 +98,21 @@ public static class WorkEndpoints
         [Description("The work id")] Guid id,
         CancellationToken ct)
     {
-        var responseResult = await services.FileStorage.GetWorkContentResponseAsync(id, ct);
-        if (!responseResult.TryGet(out var response))
+        var contentResponseResult = await services.FileStorage.GetWorkContentResponseAsync(id, ct);
+        if (!contentResponseResult.TryGet(out var contentResponse))
         {
-            return responseResult.ToHttpResult();
+            return contentResponseResult.ToHttpResult();
         }
 
-        string contentType = response.Content.Headers.ContentType?.ToString() ?? throw new InvalidOperationException();
-        var cd = response.Content.Headers.ContentDisposition;
+        string contentType = contentResponse.Content.Headers.ContentType?.ToString() ?? throw new InvalidOperationException();
+        var cd = contentResponse.Content.Headers.ContentDisposition;
         var fileName = cd?.FileNameStar ?? cd?.FileName;
 
         var result = TypedResults.Stream(
             async responseStream =>
             {
-                using (response);
-                await using var sourceStream = await response.Content.ReadAsStreamAsync(ct);
+                using var _ = contentResponse;
+                await using var sourceStream = await contentResponse.Content.ReadAsStreamAsync(ct);
                 await sourceStream.CopyToAsync(responseStream, ct);
             },
             contentType: contentType,

@@ -1,5 +1,6 @@
 using DotNext;
 using KPO_HW3.FileStorageService.Infrastructure.Data;
+using KPO_HW3.FileStorageService.Infrastructure.Data.Entities;
 using KPO_HW3.FileStorageService.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,7 @@ public class WorkSubmissionService(
     IFileStorage fileStorage,
     FileStorageDbContext dbContext) : IWorkSubmissionService
 {
-    public async Task<Result<Work>> UploadAsync(Guid studentId, Guid assignmentId, IFormFile file, CancellationToken ct = default)
+    public async Task<Result<WorkDto>> UploadAsync(Guid studentId, Guid assignmentId, IFormFile file, CancellationToken ct = default)
     {
         await using var fileStream = file.OpenReadStream();
 
@@ -17,20 +18,20 @@ public class WorkSubmissionService(
             await dbContext.Works.AnyAsync(w => w.StudentId == studentId && w.AssignmentId == assignmentId, ct);
 
         if (exists)
-            return new Result<Work>(new WorkAlreadyExistsException(studentId, assignmentId));
-
-        var fileId = await fileStorage.SaveAsync(fileStream, file.FileName, file.ContentType, ct);
+            return new Result<WorkDto>(new WorkAlreadyExistsException(studentId, assignmentId));
 
         var work = new Work
         {
             StudentId = studentId,
             AssignmentId = assignmentId,
-            FileId = fileId
+            OriginalFileName = file.FileName
         };
 
         dbContext.Works.Add(work);
         await dbContext.SaveChangesAsync(ct);
 
-        return work;
+        await fileStorage.SaveAsync(fileStream, work.FileId, file.ContentType, ct);
+
+        return work.ToDto();
     }
 }

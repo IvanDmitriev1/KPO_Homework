@@ -1,4 +1,4 @@
-using KPO_HW3.FileStorageService.Models;
+using KPO_HW3.FileStorageService.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace KPO_HW3.FileStorageService.Infrastructure.Data;
@@ -19,6 +19,12 @@ public class FileStorageDbContext(DbContextOptions<FileStorageDbContext> options
                 .ValueGeneratedOnAdd();
 
             builder.Property(w => w.FileId)
+                .IsRequired()
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("gen_random_uuid()");
+
+            builder.Property(w => w.OriginalFileName)
+                .IsRequired()
                 .HasMaxLength(512);
 
             builder.Property(w => w.AssignmentId)

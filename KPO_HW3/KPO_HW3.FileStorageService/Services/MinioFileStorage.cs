@@ -7,9 +7,9 @@ namespace KPO_HW3.FileStorageService.Services;
 
 public class MinioFileStorage(IMinioClient client, string bucketName) : IFileStorage
 {
-    public async Task<string> SaveAsync(
+    public async Task SaveAsync(
         Stream content,
-        string fileName,
+        Guid fileId,
         string contentType,
         CancellationToken ct = default)
     {
@@ -21,8 +21,6 @@ public class MinioFileStorage(IMinioClient client, string bucketName) : IFileSto
             await client.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName), ct);
         }
 
-        var fileId = GenerateObjectKey(fileName);
-
         if (content.CanSeek)
             content.Position = 0;
 
@@ -30,21 +28,20 @@ public class MinioFileStorage(IMinioClient client, string bucketName) : IFileSto
 
         var putArgs = new PutObjectArgs()
             .WithBucket(bucketName)
-            .WithObject(fileId)
+            .WithObject(fileId.ToString())
             .WithStreamData(content)
             .WithObjectSize(size)
             .WithContentType(contentType);
 
         await client.PutObjectAsync(putArgs, ct);
-
-        return fileId;
     }
 
-    public async Task<Result<StorageFileInfo>> GetFileInfoAsync(string fileId, CancellationToken ct = default)
+    public async Task<Result<StorageFileInfo>> GetFileInfoAsync(Guid fileId, CancellationToken ct = default)
     {
+
         var statArgs = new StatObjectArgs()
             .WithBucket(bucketName)
-            .WithObject(fileId);
+            .WithObject(fileId.ToString());
 
         try
         {
@@ -52,8 +49,6 @@ public class MinioFileStorage(IMinioClient client, string bucketName) : IFileSto
 
             return new StorageFileInfo
             {
-                FileId = fileId,
-                FileName = stat.ObjectName,
                 ContentType = stat.ContentType,
                 Length = stat.Size
             };
@@ -64,11 +59,11 @@ public class MinioFileStorage(IMinioClient client, string bucketName) : IFileSto
         }
     }
 
-    public async Task GetAsync(string fileId, Stream destination, CancellationToken ct = default)
+    public async Task GetAsync(Guid fileId, Stream destination, CancellationToken ct = default)
     {
         var getArgs = new GetObjectArgs()
             .WithBucket(bucketName)
-            .WithObject(fileId)
+            .WithObject(fileId.ToString())
             .WithCallbackStream(async (s, cancellationToken) =>
             {
                 await s.CopyToAsync(destination, 81920, cancellationToken);
@@ -77,19 +72,12 @@ public class MinioFileStorage(IMinioClient client, string bucketName) : IFileSto
         await client.GetObjectAsync(getArgs, ct);
     }
 
-    public async Task DeleteAsync(string fileId, CancellationToken ct = default)
+    public async Task DeleteAsync(Guid fileId, CancellationToken ct = default)
     {
         var removeArgs = new RemoveObjectArgs()
             .WithBucket(bucketName)
-            .WithObject(fileId);
+            .WithObject(fileId.ToString());
 
         await client.RemoveObjectAsync(removeArgs, ct);
-    }
-
-    private static string GenerateObjectKey(string fileName)
-    {
-        var datePrefix = DateTime.UtcNow.ToString("yyyy/MM/dd");
-        var guid = Guid.NewGuid().ToString("N");
-        return $"{datePrefix}/{guid}-{fileName}";
     }
 }

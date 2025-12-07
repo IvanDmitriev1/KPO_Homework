@@ -22,7 +22,7 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("KPO_HW3.FileStorageService.Domain.Entities.Work", b =>
+            modelBuilder.Entity("KPO_HW3.FileStorageService.Infrastructure.Data.Entities.Work", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,7 +36,12 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<string>("FileId")
+                    b.Property<Guid>("FileId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("OriginalFileName")
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");

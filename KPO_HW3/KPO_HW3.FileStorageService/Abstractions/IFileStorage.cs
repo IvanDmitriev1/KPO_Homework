@@ -1,25 +1,24 @@
 using DotNext;
-using KPO_HW3.FileStorageService.Models;
 
 namespace KPO_HW3.FileStorageService.Abstractions;
 
 public interface IFileStorage
 {
-    Task<string> SaveAsync(
+    Task SaveAsync(
         Stream content,
-        string fileName,
+        Guid fileId,
         string contentType,
         CancellationToken ct = default);
 
     Task<Result<StorageFileInfo>> GetFileInfoAsync(
-        string fileId,
+        Guid fileId,
         CancellationToken ct = default);
 
     Task GetAsync(
-        string fileId,
+        Guid fileId,
         Stream destination,
         CancellationToken ct = default);
     Task DeleteAsync(
-        string fileId,
+        Guid fileId,
         CancellationToken ct = default);
 }

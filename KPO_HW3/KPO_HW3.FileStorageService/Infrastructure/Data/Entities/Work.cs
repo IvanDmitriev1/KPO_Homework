@@ -1,6 +1,4 @@
-using System.Text.Json.Serialization;
-
-namespace KPO_HW3.FileStorageService.Models;
+namespace KPO_HW3.FileStorageService.Infrastructure.Data.Entities;
 
 public class Work
 {
@@ -9,5 +7,6 @@ public class Work
     public required Guid AssignmentId { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
 
-    public required string FileId { get; init; }
+    public required string OriginalFileName { get; init; }
+    public Guid FileId { get; init; }
 }
