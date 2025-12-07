@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
+using KPO_HW3.Api.Infrastructure.Extensions;
 
 namespace KPO_HW3.Api.Endpoints;
 
@@ -42,18 +43,21 @@ public static class WorkEndpoints
 
     [ProducesResponseType<WorkSnapshot>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<Ok<WorkSnapshot>, BadRequest<ProblemDetails>>> UploadWork(
+    public static async Task<IResult> UploadWork(
         [FromServices] WorkApiServices services,
         [Description("Student id")] Guid studentId,
         [Description("Assignment id")] Guid assignmentId,
         [FromForm(Name = "file")] IFormFile file,
         CancellationToken ct)
     {
-        var snapshot = await services.FileStorage.UploadWorkAsync(
+        var snapshotResult = await services.FileStorage.UploadWorkAsync(
             studentId,
             assignmentId,
             file,
             ct);
+
+        if (!snapshotResult.TryGet(out var snapshot))
+            return snapshotResult.ToHttpResult();
 
         _ = services.FileAnalysis.AnalyzeWorkAsync(snapshot.WorkId, ct);
 
@@ -63,16 +67,14 @@ public static class WorkEndpoints
     [ProducesResponseType<WorkSnapshot>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<Ok<WorkSnapshot>, NotFound, BadRequest<ProblemDetails>>> GetWorkById(
+    public static async Task<IResult> GetWorkById(
         [FromServices] WorkApiServices services,
         [Description("The work id")] Guid id,
         CancellationToken ct)
     {
-        var snapshot = await services.FileStorage.GetWorkAsync(id, ct);
-        if (snapshot is null)
-        {
-            return TypedResults.NotFound();
-        }
+        var snapshotResult = await services.FileStorage.GetWorkAsync(id, ct);
+        if (!snapshotResult.TryGet(out var snapshot))
+            return snapshotResult.ToHttpResult();
 
         return TypedResults.Ok(snapshot);
     }
@@ -91,16 +93,15 @@ public static class WorkEndpoints
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<PushStreamHttpResult, NotFound, BadRequest<ProblemDetails>>> GetWorkContent(
+    public static async Task<IResult> GetWorkContent(
         [FromServices] WorkApiServices services,
         [Description("The work id")] Guid id,
         CancellationToken ct)
     {
-
-        var response = await services.FileStorage.GetWorkContentResponseAsync(id, ct);
-        if (response is null)
+        var responseResult = await services.FileStorage.GetWorkContentResponseAsync(id, ct);
+        if (!responseResult.TryGet(out var response))
         {
-            return TypedResults.NotFound();
+            return responseResult.ToHttpResult();
         }
 
         string contentType = response.Content.Headers.ContentType?.ToString() ?? throw new InvalidOperationException();

@@ -1,3 +1,4 @@
+using DotNext;
 using KPO_HW3.FileStorageService.Models;
 
 namespace KPO_HW3.FileStorageService.Abstractions;
@@ -10,7 +11,7 @@ public interface IFileStorage
         string contentType,
         CancellationToken ct = default);
 
-    Task<StorageFileInfo?> GetFileInfoAsync(
+    Task<Result<StorageFileInfo>> GetFileInfoAsync(
         string fileId,
         CancellationToken ct = default);
 

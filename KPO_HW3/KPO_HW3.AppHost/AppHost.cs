@@ -12,7 +12,9 @@ var env = builder.AddDockerComposeEnvironment("docker")
         dashboard.WithForwardedHeaders();
     });
 
-var minio = builder.AddMinioContainer("minio");
+var minio = builder.AddMinioContainer("minio")
+    .WithDataVolume()
+    .WithLifetime(ContainerLifetime.Persistent);
 
 var postgres = builder.AddPostgres("db")
     .WithDataVolume()

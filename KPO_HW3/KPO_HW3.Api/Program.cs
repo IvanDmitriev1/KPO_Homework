@@ -1,4 +1,6 @@
+using KPO_HW3.Api.Abstractions;
 using KPO_HW3.Api.Endpoints;
+using KPO_HW3.Api.Infrastructure;
 using KPO_HW3.Api.Services;
 using KPO_HW3.ServiceDefaults;
 using Scalar.AspNetCore;
@@ -7,19 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
-
-
-builder.Services.AddHttpClient<IFileStorageService, HttpFileStorageService>(client =>
-{
-    client.BaseAddress = new Uri("https+http://file-storage");
-});
-
-builder.Services.AddHttpClient<IFileAnalysisService, HttpFileAnalysisService>(client =>
-{
-    client.BaseAddress = new Uri("https+http://file-analysis");
-});
+builder.Services.AddInfrastructure();
 
 builder.Services.AddScoped<WorkApiServices>();
+
+builder.Services.AddHttpClient<IWordCloudService, QuickChartWordCloudService>(client =>
+{
+    client.BaseAddress = new Uri("https://quickchart.io");
+});
 
 var app = builder.Build();
 app.MapDefaultEndpoints();
@@ -27,24 +24,15 @@ app.MapDefaultEndpoints();
 app.MapOpenApi();
 app.MapScalarApiReference(options =>
 {
-    options.ShowDeveloperTools = DeveloperToolsVisibility.Always;
-
-    if (app.Environment.IsDevelopment())
-    {
-        options
-            .WithTitle("Test1")
-            .AddServer("https://g0fhb46x-7140.euw.devtunnels.ms")
-            .AddServer("https://localhost:7140", "Local");
-    }
-    else
-    {
-        options.WithDynamicBaseServerUrl();
-    }
+    options.Theme = ScalarTheme.Moon;
+    options.Layout = ScalarLayout.Modern;
+    options.WithDynamicBaseServerUrl();
 });
 
 app.UseHttpsRedirection();
 
 app.MapWorkEndpoints();
+app.MapWordCloudEndpoints();
 app.MapGet("/", () => Results.Redirect("/scalar", true));
 
 app.Run();

@@ -1,23 +1,20 @@
 using DotNext;
-using KPO_HW3.FileAnalysisService.Infrastructure.Exceptions;
-using System.Runtime.ExceptionServices;
 
 namespace KPO_HW3.FileAnalysisService.Infrastructure.Extensions;
 
 public static class ResultExtensions
 {
-    public static IResult ToHttpResult<T>(this Result<T> result, HttpContext httpContext)
+    public static async Task<Result<TResult>> ContinueAsync<TSource, TResult>(
+        this Task<Result<TSource>> resultTask,
+        Func<TSource, Task<Result<TResult>>> next)
     {
-        if (result.IsSuccessful)
-            throw new InvalidOperationException("Result has a value");
+        var result = await resultTask.ConfigureAwait(false);
 
-        switch (result.Error)
+        if (result.TryGet(out var value))
         {
-            case WorkNotFoundException:
-                return TypedResults.NotFound();
+            return await next.Invoke(value).ConfigureAwait(false);
         }
 
-        ExceptionDispatchInfo.Throw(result.Error);
-        throw new InvalidOperationException();
+        return Result.FromException<TResult>(result.Error!);
     }
 }

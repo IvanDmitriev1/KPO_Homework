@@ -1,3 +1,4 @@
+using DotNext;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
@@ -39,7 +40,7 @@ public class MinioFileStorage(IMinioClient client, string bucketName) : IFileSto
         return fileId;
     }
 
-    public async Task<StorageFileInfo?> GetFileInfoAsync(string fileId, CancellationToken ct = default)
+    public async Task<Result<StorageFileInfo>> GetFileInfoAsync(string fileId, CancellationToken ct = default)
     {
         var statArgs = new StatObjectArgs()
             .WithBucket(bucketName)
@@ -59,7 +60,7 @@ public class MinioFileStorage(IMinioClient client, string bucketName) : IFileSto
         }
         catch (ObjectNotFoundException)
         {
-            return null;
+            return Result.FromException<StorageFileInfo>(new FileNotFoundException());
         }
     }
 
@@ -70,8 +71,7 @@ public class MinioFileStorage(IMinioClient client, string bucketName) : IFileSto
             .WithObject(fileId)
             .WithCallbackStream(async (s, cancellationToken) =>
             {
-                await s.CopyToAsync(destination, 81920, cancellationToken)
-                    .ConfigureAwait(false);
+                await s.CopyToAsync(destination, 81920, cancellationToken);
             });
 
         await client.GetObjectAsync(getArgs, ct);

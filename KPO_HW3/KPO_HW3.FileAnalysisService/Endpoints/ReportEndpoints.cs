@@ -1,4 +1,3 @@
-using DotNext;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using KPO_HW3.FileAnalysisService.Infrastructure.Data;
@@ -33,42 +32,22 @@ public static class ReportEndpoints
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     public static async Task<IResult> AnalyzeWork(
-        HttpContext httpContext,
         [FromServices] IAnalysisService services,
         [FromRoute, Description("The work id")] Guid id,
         CancellationToken ct)
     {
-        if (id == Guid.Empty)
-        {
-            var problem = httpContext.CreateProblem(
-                StatusCodes.Status400BadRequest,
-                "Invalid work id.");
-
-            return TypedResults.BadRequest(problem);
-        }
-
         var result = await services.AnalyzeAsync(id, ct);
-
-        return result.IsSuccessful ? TypedResults.Ok(result.Value) : result.ToHttpResult(httpContext);
+        return result.IsSuccessful ? TypedResults.Ok(result.Value) : result.ToHttpResult();
     }
 
 
     [ProducesResponseType<IEnumerable<PlagiarismReport>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     public static async Task<Results<Ok<List<PlagiarismReport>>, BadRequest<ProblemDetails>>> GetReportsByWork(
-        HttpContext httpContext,
         [FromServices] AnalysisDbContext dbContext,
         [FromRoute, Description("The work id")] Guid id,
         CancellationToken ct)
     {
-        if (id == Guid.Empty)
-        {
-            var problem = httpContext.CreateProblem(
-                StatusCodes.Status400BadRequest,
-                "Invalid work id.");
-
-            return TypedResults.BadRequest(problem);
-        }
 
         var items = await dbContext.PlagiarismReports
             .AsNoTracking()

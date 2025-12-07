@@ -1,7 +1,5 @@
-using KPO_HW3.FileStorageService.Abstractions;
 using KPO_HW3.FileStorageService.Infrastructure.Data;
 using KPO_HW3.FileStorageService.Infrastructure.Extensions;
-using KPO_HW3.FileStorageService.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,7 +54,7 @@ public static class WorkEndpoints
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<Results<PushStreamHttpResult, NotFound, BadRequest<ProblemDetails>>> GetWorkContent(
+    public static async Task<IResult> GetWorkContent(
         [FromServices] FileStorageDbContext dbContext,
         [FromServices] IFileStorage fileStorage,
         [Description("The work id")] Guid id,
@@ -64,15 +62,11 @@ public static class WorkEndpoints
     {
         var work = await dbContext.Works.AsNoTracking().FirstOrDefaultAsync(w => w.Id == id, cancellationToken: ct);
         if (work is null)
-        {
             return TypedResults.NotFound();
-        }
 
-        var fileInfo = await fileStorage.GetFileInfoAsync(work.FileId, ct);
-        if (fileInfo is null)
-        {
-            return TypedResults.NotFound();
-        }
+        var fileInfoResult = await fileStorage.GetFileInfoAsync(work.FileId, ct);
+        if (!fileInfoResult.TryGet(out var fileInfo))
+            return fileInfoResult.ToHttpResult();
 
         var result = TypedResults.Stream(
             async responseStream =>
@@ -102,13 +96,10 @@ public static class WorkEndpoints
             return TypedResults.BadRequest(problem);
         }
 
-        var result =
-            await workSubmissionService.UploadAsync(studentId, assignmentId, file, ct);
+        var result = await workSubmissionService.UploadAsync(studentId, assignmentId, file, ct);
+        if (!result.TryGet(out var work))
+            return result.ToHttpResult();
 
-        if (!result.IsSuccessful)
-            return result.ToHttpResult(httpContext);
-
-        var work = result.Value;
         var location = $"works/{work.Id}";
         return TypedResults.Created(location, work);
     }

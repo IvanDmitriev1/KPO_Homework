@@ -1,8 +1,10 @@
+using DotNext;
+
 namespace KPO_HW3.Api.Abstractions;
 
 public interface IFileAnalysisService
 {
-    Task<PlagiarismReportSnapshot> AnalyzeWorkAsync(
+    Task<Result<PlagiarismReportSnapshot>> AnalyzeWorkAsync(
         Guid workId,
         CancellationToken cancellationToken = default);
 

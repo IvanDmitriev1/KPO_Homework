@@ -1,12 +1,12 @@
-using System.Runtime.ExceptionServices;
 using DotNext;
-using KPO_HW3.FileStorageService.Infrastructure.Exceptions;
+using KPO_HW3.Api.Infrastructure.Exceptions;
+using System.Runtime.ExceptionServices;
 
-namespace KPO_HW3.FileStorageService.Infrastructure.Extensions;
+namespace KPO_HW3.Api.Infrastructure.Extensions;
 
-public static class ResultExtensions
+public static class ResultHttpExtensions
 {
-    public static IResult ToHttpResult<T>(this Result<T> result, HttpContext httpContext)
+    public static IResult ToHttpResult<T>(this Result<T> result)
     {
         if (result.IsSuccessful)
             throw new InvalidOperationException("Result has a value");

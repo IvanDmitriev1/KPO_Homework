@@ -1,27 +1,27 @@
 using KPO_HW3.FileAnalysisService.Infrastructure.External;
 using System.Net;
+using DotNext;
+using KPO_HW3.FileAnalysisService.Infrastructure.Exceptions;
 
 namespace KPO_HW3.FileAnalysisService.Services;
 
 public class HttpFileStorageApi(HttpClient client) : IFileStorageApi
 {
-    public async Task<WorkSnapshot?> GetWorkAsync(
+    public async Task<Result<WorkSnapshot>> GetWorkAsync(
         Guid workId,
         CancellationToken ct = default)
     {
         using var response = await client.GetAsync($"/works/{workId}", ct);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return null;
-        }
+            return Result.FromException<WorkSnapshot>(new WorkNotFoundException(workId));
 
         response.EnsureSuccessStatusCode();
 
         var snapshot = await response.Content.ReadFromJsonAsync<WorkSnapshot>(
             cancellationToken: ct);
 
-        return snapshot;
+        return snapshot ?? throw new InvalidOperationException();
     }
     public async Task<Stream> GetWorkContentAsync(Guid workId, CancellationToken ct = default)
     {
