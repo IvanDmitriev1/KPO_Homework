@@ -21,7 +21,11 @@ builder.Services.AddHttpClient<IFileStorageApi, HttpFileStorageApi>(client =>
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
-app.MapOpenApi();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+}
 
 app.MapReportEndpoints();
 

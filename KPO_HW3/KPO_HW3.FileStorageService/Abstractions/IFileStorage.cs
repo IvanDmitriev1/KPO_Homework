@@ -18,6 +18,7 @@ public interface IFileStorage
         Guid fileId,
         Stream destination,
         CancellationToken ct = default);
+
     Task DeleteAsync(
         Guid fileId,
         CancellationToken ct = default);

@@ -93,14 +93,11 @@ public static class WorkEndpoints
     {
         if (file.Length == 0)
         {
-            return TypedResults.BadRequest(
-                httpContext.CreateProblem(StatusCodes.Status400BadRequest, "File is empty."));
-        }
-
-        if (file.Length > 20 * 1024 * 1024) // 20MB
-        {
-            var problem = httpContext.CreateProblem(StatusCodes.Status400BadRequest, "File is too large.");
-            return TypedResults.BadRequest(problem);
+            return TypedResults.BadRequest(new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Title = "File is empty."
+            });
         }
 
         var result = await workSubmissionService.UploadAsync(studentId, assignmentId, file, ct);

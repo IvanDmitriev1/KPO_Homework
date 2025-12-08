@@ -40,7 +40,6 @@ public static class ReportEndpoints
         return result.IsSuccessful ? TypedResults.Ok(result.Value) : result.ToHttpResult();
     }
 
-
     [ProducesResponseType<IEnumerable<PlagiarismReport>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     public static async Task<Results<Ok<List<PlagiarismReport>>, BadRequest<ProblemDetails>>> GetReportsByWork(
@@ -48,7 +47,6 @@ public static class ReportEndpoints
         [FromRoute, Description("The work id")] Guid id,
         CancellationToken ct)
     {
-
         var items = await dbContext.PlagiarismReports
             .AsNoTracking()
             .Where(r => r.WorkId == id)
