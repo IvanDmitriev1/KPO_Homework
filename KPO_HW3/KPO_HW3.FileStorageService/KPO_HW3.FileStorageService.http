@@ -1,0 +1,37 @@
+@host = https://localhost:7066
+@workId = 5c529243-3cc1-407d-8bb4-409cd79bdce8
+@studentId = 22222222-2222-2222-2222-222222222222
+@assignmentId = 33333333-3333-3333-3333-333333333333
+
+### Upload student work
+# POST /works/upload
+# multipart/form-data: studentId, assignmentId, file
+POST {{host}}/works/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="studentId"
+
+{{studentId}}
+--WebAppBoundary
+Content-Disposition: form-data; name="assignmentId"
+
+{{assignmentId}}
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="sample.txt"
+Content-Type: text/plain
+
+This is a sample work content.
+--WebAppBoundary--
+
+
+### Get work by id
+# GET /works/{id}
+GET {{host}}/works/{{workId}}
+Accept: application/json
+
+
+### Get work content by id
+# GET /works/{id}/content
+GET {{host}}/works/{{workId}}/content
+Accept: */*
