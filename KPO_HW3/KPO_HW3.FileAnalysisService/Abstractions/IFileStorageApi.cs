@@ -9,7 +9,7 @@ public interface IFileStorageApi
         Guid workId,
         CancellationToken ct = default);
 
-    Task<Stream> GetWorkContentAsync(
+    Task<HttpResponseMessage> GetWorkContentAsync(
         Guid workId,
         CancellationToken ct = default);
 }

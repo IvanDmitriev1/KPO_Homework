@@ -13,9 +13,11 @@ var env = builder.AddDockerComposeEnvironment("docker")
     });
 
 var minio = builder.AddMinioContainer("minio")
+    .WithLifetime(ContainerLifetime.Persistent)
     .WithDataVolume();
 
 var postgres = builder.AddPostgres("db")
+    .WithLifetime(ContainerLifetime.Persistent)
     .WithDataVolume();
 
 var fileStorageDb = postgres.AddDatabase("file-storage-db");

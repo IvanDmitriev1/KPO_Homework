@@ -8,7 +8,7 @@ public interface IFileAnalysisService
         Guid workId,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<PlagiarismReportSnapshot>> GetReportsByWorkAsync(
+    Task<Result<PlagiarismReportSnapshot>> GetReportsByWorkAsync(
         Guid workId,
         CancellationToken cancellationToken = default);
 }

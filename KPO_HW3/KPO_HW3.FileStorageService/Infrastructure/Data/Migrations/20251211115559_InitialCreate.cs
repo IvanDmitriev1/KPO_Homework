@@ -26,6 +26,12 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Works", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Works_StudentId_AssignmentId",
+                table: "Works",
+                columns: new[] { "StudentId", "AssignmentId" },
+                unique: true);
         }
 
         /// <inheritdoc />

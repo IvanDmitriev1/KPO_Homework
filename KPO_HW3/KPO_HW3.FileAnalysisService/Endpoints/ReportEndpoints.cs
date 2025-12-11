@@ -1,4 +1,3 @@
-using KPO_HW3.FileAnalysisService.Infrastructure.Data;
 using KPO_HW3.FileAnalysisService.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +28,7 @@ public static class ReportEndpoints
         return group;
     }
 
-    public static async Task<Results<Ok<PlagiarismReport>, NotFound, BadRequest<ProblemDetails>>> AnalyzeWork(
+    public static async Task<Results<Ok<PlagiarismReportDto>, NotFound, BadRequest<ProblemDetails>>> AnalyzeWork(
         [FromServices] IAnalysisService services,
         [FromRoute, Description("The work id")] Guid id,
         CancellationToken ct)
@@ -50,17 +49,21 @@ public static class ReportEndpoints
         throw new InvalidOperationException();
     }
 
-    public static async Task<Results<Ok<List<PlagiarismReport>>, BadRequest<ProblemDetails>>> GetReportsByWork(
+    public static async Task<Results<Ok<PlagiarismReportDto>, NotFound, BadRequest<ProblemDetails>>> GetReportsByWork(
         [FromServices] AnalysisDbContext dbContext,
         [FromRoute, Description("The work id")] Guid id,
         CancellationToken ct)
     {
-        var items = await dbContext.PlagiarismReports
+        var item = await dbContext.PlagiarismReports
             .AsNoTracking()
-            .Where(r => r.WorkId == id)
-            .OrderByDescending(r => r.CreatedAt)
-            .ToListAsync(ct);
+            .Include(r => r.Matches)
+            .FirstOrDefaultAsync(r => r.WorkId == id, cancellationToken: ct);
 
-        return TypedResults.Ok(items);
+        if (item is not null)
+        {
+            return TypedResults.Ok(item.ToDto());
+        }
+
+        return TypedResults.NotFound();
     }
 }

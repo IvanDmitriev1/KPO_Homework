@@ -1,4 +1,3 @@
-using KPO_HW3.FileAnalysisService.Infrastructure.External;
 using System.Net;
 using DotNext;
 using KPO_HW3.FileAnalysisService.Infrastructure.Exceptions;
@@ -23,7 +22,7 @@ public class HttpFileStorageApi(HttpClient client) : IFileStorageApi
 
         return snapshot ?? throw new InvalidOperationException();
     }
-    public async Task<Stream> GetWorkContentAsync(Guid workId, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> GetWorkContentAsync(Guid workId, CancellationToken ct = default)
     {
         var response = await client.GetAsync(
             $"/works/{workId}/content",
@@ -31,8 +30,6 @@ public class HttpFileStorageApi(HttpClient client) : IFileStorageApi
             ct);
 
         response.EnsureSuccessStatusCode();
-
-        var stream = await HttpResponseContentStream.Create(response);
-        return stream;
+        return response;
     }
 }

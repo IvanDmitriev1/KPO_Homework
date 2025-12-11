@@ -1,15 +1,10 @@
-using System.Text.Json.Serialization;
-
 namespace KPO_HW3.Api.Models;
 
 public sealed class WorkSnapshot
 {
-    [JsonPropertyName("id")]
-    public required Guid WorkId { get; init; }
-
-    [JsonPropertyName("studentId")]
+    public Guid Id { get; init; }
     public required Guid StudentId { get; init; }
-
-    [JsonPropertyName("assignmentId")]
     public required Guid AssignmentId { get; init; }
+    public required string OriginalFileName { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
 }

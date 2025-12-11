@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(FileStorageDbContext))]
-    [Migration("20251207153210_InitialCreate")]
+    [Migration("20251211115559_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -53,6 +53,9 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StudentId", "AssignmentId")
+                        .IsUnique();
 
                     b.ToTable("Works");
                 });

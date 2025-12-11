@@ -1,5 +1,4 @@
 using System.Net;
-using System.Text.Json;
 using DotNext;
 using KPO_HW3.Api.Infrastructure.Exceptions;
 using KPO_HW3.Api.Infrastructure.Extensions;
@@ -20,22 +19,17 @@ public sealed class HttpFileAnalysisService(HttpClient client) : IFileAnalysisSe
                 return new DownstreamHttpException(code, body);
             }, cancellationToken);
 
-    public async Task<IReadOnlyList<PlagiarismReportSnapshot>> GetReportsByWorkAsync(
+    public Task<Result<PlagiarismReportSnapshot>> GetReportsByWorkAsync(
         Guid workId,
-        CancellationToken cancellationToken = default)
-    {
-        var response = await client.GetAsync($"/works/{workId}/reports", cancellationToken);
+        CancellationToken cancellationToken = default) =>
+        client.GetAsync($"/works/{workId}/reports", cancellationToken)
+            .ToJsonResultAsync<PlagiarismReportSnapshot>((code, body) =>
+            {
+                if (code == HttpStatusCode.NotFound)
+                {
+                    return new PlagiarismReportNotFoundException(workId);
+                }
 
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            return [];
-        }
-
-        response.EnsureSuccessStatusCode();
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var reports = await JsonSerializer.DeserializeAsync<List<PlagiarismReportSnapshot>>(stream, cancellationToken: cancellationToken);
-
-        return reports ?? [];
-    }
+                return new DownstreamHttpException(code, body);
+            }, ct: cancellationToken);
 }

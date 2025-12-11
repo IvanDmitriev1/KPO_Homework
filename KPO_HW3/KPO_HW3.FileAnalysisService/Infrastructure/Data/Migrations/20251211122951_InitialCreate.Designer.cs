@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KPO_HW3.FileAnalysisService.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AnalysisDbContext))]
-    [Migration("20251202140207_InitialCreate")]
+    [Migration("20251211122951_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,13 +25,10 @@ namespace KPO_HW3.FileAnalysisService.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("KPO_HW3.FileAnalysisService.Domain.Entities.PlagiarismReport", b =>
+            modelBuilder.Entity("KPO_HW3.FileAnalysisService.Infrastructure.Data.Entities.PlagiarismReport", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("WorkId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AssignmentId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("ContentHash")
@@ -44,29 +41,47 @@ namespace KPO_HW3.FileAnalysisService.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<string>("Details")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<bool>("IsPlagiarized")
-                        .HasColumnType("boolean");
-
                     b.Property<double>("SimilarityScore")
                         .HasColumnType("double precision");
 
                     b.Property<Guid>("StudentId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("WorkId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("WorkId");
-
-                    b.HasIndex("AssignmentId", "ContentHash");
+                    b.HasKey("WorkId");
 
                     b.ToTable("PlagiarismReports");
+                });
+
+            modelBuilder.Entity("KPO_HW3.FileAnalysisService.Infrastructure.Data.Entities.PlagiarismReport", b =>
+                {
+                    b.OwnsMany("KPO_HW3.FileAnalysisService.Infrastructure.Data.Entities.PlagiarismReportMatch", "Matches", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("MatchedWorkId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<Guid>("ReportWorkId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<double>("SimilarityScore")
+                                .HasColumnType("double precision");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ReportWorkId");
+
+                            b1.ToTable("PlagiarismReportMatch");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReportWorkId");
+                        });
+
+                    b.Navigation("Matches");
                 });
 #pragma warning restore 612, 618
         }

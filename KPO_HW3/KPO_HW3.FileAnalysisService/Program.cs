@@ -1,6 +1,5 @@
 using KPO_HW3.FileAnalysisService.Endpoints;
 using KPO_HW3.FileAnalysisService.Infrastructure;
-using KPO_HW3.FileAnalysisService.Infrastructure.Data;
 using KPO_HW3.FileAnalysisService.Services;
 using KPO_HW3.ServiceDefaults;
 

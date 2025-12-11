@@ -1,5 +1,4 @@
 using DotNext;
-using KPO_HW3.FileAnalysisService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using KPO_HW3.FileAnalysisService.Infrastructure.Extensions;
@@ -10,36 +9,40 @@ public class AnalysisService(
     IFileStorageApi fileStorageApi,
     AnalysisDbContext dbContext) : IAnalysisService
 {
-    public Task<Result<PlagiarismReport>> AnalyzeAsync(Guid workId, CancellationToken ct = default) =>
+    public Task<Result<PlagiarismReportDto>> AnalyzeAsync(Guid workId, CancellationToken ct = default) =>
         fileStorageApi.GetWorkAsync(workId, ct)
-            .ContinueAsync<WorkSnapshot, PlagiarismReport>(async snapshot =>
+            .ContinueAsync<WorkSnapshot, PlagiarismReportDto>(async snapshot =>
             {
-                await using var stream = await fileStorageApi.GetWorkContentAsync(workId, ct);
+                using var httpResponse = await fileStorageApi.GetWorkContentAsync(workId, ct);
+                var stream = await httpResponse.Content.ReadAsStreamAsync(ct);
                 string contentHash = await ComputeContentHash(stream, ct);
 
-                bool plagiarized = await dbContext.PlagiarismReports.AnyAsync(r =>
-                        r.AssignmentId == snapshot.AssignmentId &&
+                var originalReports  = await dbContext.PlagiarismReports
+                    .AsNoTracking()
+                    .Include(r => r.Matches)
+                    .Where(r =>
                         r.ContentHash == contentHash &&
-                        r.StudentId != snapshot.StudentId,
-                    cancellationToken: ct);
+                        r.SimilarityScore < 1 &&
+                        r.StudentId != snapshot.StudentId)
+                    .ToListAsync(cancellationToken: ct);
 
                 var report = new PlagiarismReport
                 {
-                    WorkId = snapshot.WorkId,
+                    WorkId = snapshot.Id,
                     StudentId = snapshot.StudentId,
-                    AssignmentId = snapshot.AssignmentId,
                     ContentHash = contentHash,
-                    IsPlagiarized = plagiarized,
-                    SimilarityScore = plagiarized ? 1.0 : 0.0,
-                    Details = plagiarized
-                        ? "Detected identical content for the same assignment from another student."
-                        : "No matching content found for this assignment.",
+                    SimilarityScore = originalReports.Count > 0 ? 1.0 : 0.0,
+                    Matches = originalReports.Select(r => new PlagiarismReportMatch
+                    {
+                        SimilarityScore = 1,
+                        MatchedWorkId = r.WorkId,
+                    }).ToList()
                 };
 
                 dbContext.PlagiarismReports.Add(report);
                 await dbContext.SaveChangesAsync(ct);
 
-                return report;
+                return report.ToDto();
             });
 
     private static async Task<string> ComputeContentHash(Stream stream, CancellationToken ct)

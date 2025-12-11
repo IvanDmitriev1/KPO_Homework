@@ -51,6 +51,9 @@ namespace KPO_HW3.FileStorageService.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("StudentId", "AssignmentId")
+                        .IsUnique();
+
                     b.ToTable("Works");
                 });
 #pragma warning restore 612, 618

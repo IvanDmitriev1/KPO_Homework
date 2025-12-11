@@ -57,7 +57,7 @@ public static class WorkEndpoints
 
         if (snapshotResult.TryGet(out var snapshot))
         {
-            _ = services.FileAnalysis.AnalyzeWorkAsync(snapshot.WorkId, ct);
+            _ = services.FileAnalysis.AnalyzeWorkAsync(snapshot.Id, ct);
             return TypedResults.Ok(snapshot);
         }
 
@@ -96,13 +96,25 @@ public static class WorkEndpoints
         throw new InvalidOperationException();
     }
 
-    public static async Task<Results<Ok<IReadOnlyList<PlagiarismReportSnapshot>>, BadRequest<ProblemDetails>>> GetWorkReports(
+    public static async Task<Results<Ok<PlagiarismReportSnapshot>, NotFound>> GetWorkReports(
         [FromServices] WorkApiServices services,
         [Description("The work id")] Guid id,
         CancellationToken ct)
     {
-        var reports = await services.FileAnalysis.GetReportsByWorkAsync(id, ct);
-        return TypedResults.Ok(reports);
+        var reportResult = await services.FileAnalysis.GetReportsByWorkAsync(id, ct);
+        if (reportResult.TryGet(out var report))
+        {
+            return TypedResults.Ok(report);
+        }
+
+        switch (reportResult.Error)
+        {
+            case PlagiarismReportNotFoundException:
+                return TypedResults.NotFound();
+        }
+
+        ExceptionDispatchInfo.Throw(reportResult.Error!);
+        throw new InvalidOperationException();
     }
 
     
