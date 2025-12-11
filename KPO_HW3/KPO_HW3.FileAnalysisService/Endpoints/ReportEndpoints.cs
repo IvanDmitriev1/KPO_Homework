@@ -1,9 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
 using KPO_HW3.FileAnalysisService.Infrastructure.Data;
+using KPO_HW3.FileAnalysisService.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using KPO_HW3.FileAnalysisService.Infrastructure.Extensions;
+using System.ComponentModel;
+using System.Runtime.ExceptionServices;
 
 namespace KPO_HW3.FileAnalysisService.Endpoints;
 
@@ -28,20 +29,27 @@ public static class ReportEndpoints
         return group;
     }
 
-    [ProducesResponseType<PlagiarismReport>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<IResult> AnalyzeWork(
+    public static async Task<Results<Ok<PlagiarismReport>, NotFound, BadRequest<ProblemDetails>>> AnalyzeWork(
         [FromServices] IAnalysisService services,
         [FromRoute, Description("The work id")] Guid id,
         CancellationToken ct)
     {
         var result = await services.AnalyzeAsync(id, ct);
-        return result.IsSuccessful ? TypedResults.Ok(result.Value) : result.ToHttpResult();
+        if (result.TryGet(out var value))
+        {
+            return TypedResults.Ok(value);
+        }
+
+        switch (result.Error)
+        {
+            case WorkNotFoundException:
+                return TypedResults.NotFound();
+        }
+
+        ExceptionDispatchInfo.Throw(result.Error!);
+        throw new InvalidOperationException();
     }
 
-    [ProducesResponseType<IEnumerable<PlagiarismReport>>(StatusCodes.Status200OK)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     public static async Task<Results<Ok<List<PlagiarismReport>>, BadRequest<ProblemDetails>>> GetReportsByWork(
         [FromServices] AnalysisDbContext dbContext,
         [FromRoute, Description("The work id")] Guid id,

@@ -1,10 +1,11 @@
 using KPO_HW3.FileStorageService.Infrastructure.Data;
 using KPO_HW3.FileStorageService.Infrastructure.Data.Entities;
-using KPO_HW3.FileStorageService.Infrastructure.Extensions;
+using KPO_HW3.FileStorageService.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
+using System.Runtime.ExceptionServices;
 
 namespace KPO_HW3.FileStorageService.Endpoints;
 
@@ -35,9 +36,6 @@ public static class WorkEndpoints
         return endpoints;
     }
 
-    [ProducesResponseType<Work>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
     public static async Task<Results<Ok<Work>, NotFound, BadRequest<ProblemDetails>>> GetWorkById(
         HttpContext httpContext,
         [FromServices] FileStorageDbContext dbContext,
@@ -52,10 +50,7 @@ public static class WorkEndpoints
         return TypedResults.Ok(work);
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<IResult> GetWorkContent(
+    public static async Task<Results<PushStreamHttpResult, NotFound, Conflict>> GetWorkContent(
         [FromServices] FileStorageDbContext dbContext,
         [FromServices] IFileStorage fileStorage,
         [Description("The work id")] Guid id,
@@ -66,24 +61,33 @@ public static class WorkEndpoints
             return TypedResults.NotFound();
 
         var fileInfoResult = await fileStorage.GetFileInfoAsync(work.FileId, ct);
-        if (!fileInfoResult.TryGet(out var fileInfo))
-            return fileInfoResult.ToHttpResult();
+        if (fileInfoResult.TryGet(out var fileInfo))
+        {
+            var result = TypedResults.Stream(
+                async responseStream =>
+                {
+                    await fileStorage.GetAsync(work.FileId, responseStream, ct);
+                },
+                contentType: fileInfo.ContentType,
+                fileDownloadName: work.OriginalFileName
+            );
 
-        var result = TypedResults.Stream(
-            async responseStream =>
-            {
-                await fileStorage.GetAsync(work.FileId, responseStream, ct);
-            },
-            contentType: fileInfo.ContentType,
-            fileDownloadName: work.OriginalFileName
-        );
+            return result;
+        }
 
-        return result;
+        switch (fileInfoResult.Error)
+        {
+            case FileNotFoundException:
+                return TypedResults.NotFound();
+            case WorkAlreadyExistsException:
+                return TypedResults.Conflict();
+        }
+
+        ExceptionDispatchInfo.Throw(fileInfoResult.Error!);
+        throw new InvalidOperationException("Unreachable code.");
     }
 
-    [ProducesResponseType<Work>(StatusCodes.Status201Created)]
-    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
-    public static async Task<IResult> PostUploadWork(
+    public static async Task<Results<Created<WorkDto>, NotFound, Conflict, BadRequest<ProblemDetails>>> PostUploadWork(
     HttpContext httpContext,
     [FromServices] IWorkSubmissionService workSubmissionService,
     [FromForm(Name = nameof(studentId)), Description("Student id")] Guid studentId,
@@ -101,10 +105,21 @@ public static class WorkEndpoints
         }
 
         var result = await workSubmissionService.UploadAsync(studentId, assignmentId, file, ct);
-        if (!result.TryGet(out var work))
-            return result.ToHttpResult();
+        if (result.TryGet(out var work))
+        {
+            var location = $"works/{work.Id}";
+            return TypedResults.Created(location, work);
+        }
 
-        var location = $"works/{work.Id}";
-        return TypedResults.Created(location, work);
+        switch (result.Error)
+        {
+            case FileNotFoundException:
+                return TypedResults.NotFound();
+            case WorkAlreadyExistsException:
+                return TypedResults.Conflict();
+        }
+
+        ExceptionDispatchInfo.Throw(result.Error!);
+        throw new InvalidOperationException("Unreachable code.");
     }
 }
