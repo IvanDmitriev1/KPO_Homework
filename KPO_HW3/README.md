@@ -13,7 +13,7 @@
 
 1. AppHost - aspire оркестрация
 2. Api – отвечает за routing запросов.
-3. File Analysis Service – отвечает за анализ на полагиат.
+3. File Analysis Service – отвечает за анализ на плагиата.
 4. Files Storing Service – отвечает за хранение и выдачу файлов.
 
 # Базы данных
