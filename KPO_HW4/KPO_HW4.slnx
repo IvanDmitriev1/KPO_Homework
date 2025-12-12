@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Hosting/">
+    <Project Path="KPO_HW4.AppHost/KPO_HW4.AppHost.csproj" />
+    <Project Path="KPO_HW4.ServiceDefaults/KPO_HW4.ServiceDefaults.csproj" />
+  </Folder>
+  <Project Path="KPO_HW4.Api/KPO_HW4.Api.csproj" />
+  <Project Path="KPO_HW4.OrderService/KPO_HW4.OrderService.csproj" />
+  <Project Path="KPO_HW4.PaymentsService/KPO_HW4.PaymentsService.csproj" />
+</Solution>

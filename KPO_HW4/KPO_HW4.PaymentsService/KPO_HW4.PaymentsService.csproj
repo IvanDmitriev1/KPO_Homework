@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <ContainerBaseImage>mcr.microsoft.com/dotnet/aspnet:10.0</ContainerBaseImage>
+    <UserSecretsId>b8d0a612-8e03-4cc9-8df5-519369554ce3</UserSecretsId>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ContainerPort Include="8081" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KPO_HW4.ServiceDefaults\KPO_HW4.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,19 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.0.2">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>8de523c7-9251-40ea-ad99-738d99fcbc57</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Aspire.Hosting.Docker" />
+	  <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KPO_HW4.Api\KPO_HW4.Api.csproj" />
+    <ProjectReference Include="..\KPO_HW4.OrderService\KPO_HW4.OrderService.csproj" />
+    <ProjectReference Include="..\KPO_HW4.PaymentsService\KPO_HW4.PaymentsService.csproj" />
+  </ItemGroup>
+
+</Project>
