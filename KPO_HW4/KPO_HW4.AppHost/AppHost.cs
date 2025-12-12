@@ -52,7 +52,7 @@ var gateway = builder.AddYarp("gateway")
         yarp.AddRoute("/api/orders/{**catch-all}", ordersService)
             .WithTransformPathRemovePrefix("/api");
 
-        yarp.AddRoute("/api/payments/{**catch-all}", paymentsService)
+        yarp.AddRoute("/api/accounts/{**catch-all}", paymentsService)
             .WithTransformPathRemovePrefix("/api");
 
         yarp.AddRoute("/{**catch-all}", ui);

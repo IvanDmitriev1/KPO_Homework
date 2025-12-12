@@ -10,12 +10,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+		<PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
+		<PackageReference Include="MassTransit.EntityFrameworkCore" />
+		<PackageReference Include="MassTransit.RabbitMQ" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Scalar.AspNetCore" />
 	</ItemGroup>
 	
 
 	<ItemGroup>
     <ProjectReference Include="..\KPO_HW4.ServiceDefaults\KPO_HW4.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\KPO_HW4.Shared.Contracts\KPO_HW4.Shared.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
