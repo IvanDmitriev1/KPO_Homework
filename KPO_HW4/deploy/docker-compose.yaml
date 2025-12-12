@@ -1,0 +1,176 @@
+services:
+  docker-dashboard:
+    image: "mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest"
+    environment:
+      ASPIRE_DASHBOARD_FORWARDEDHEADERS_ENABLED: "true"
+    ports:
+      - "18888:18888"
+    expose:
+      - "18889"
+    networks:
+      - "my-network"
+    restart: "always"
+  messaging:
+    image: "docker.io/library/rabbitmq:4.2-management"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "${MESSAGING_PASSWORD}"
+    expose:
+      - "5672"
+      - "15672"
+    volumes:
+      - type: "volume"
+        target: "/var/lib/rabbitmq"
+        source: "kpo_hw4.apphost-17cdd35e11-messaging-data"
+        read_only: false
+    networks:
+      - "my-network"
+  postgres:
+    image: "docker.io/library/postgres:17.6"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: "scram-sha-256"
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=scram-sha-256"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    expose:
+      - "5432"
+    volumes:
+      - type: "volume"
+        target: "/var/lib/postgresql/data"
+        source: "kpo_hw4.apphost-17cdd35e11-postgres-data"
+        read_only: false
+    networks:
+      - "my-network"
+  paymentsservice:
+    image: "${PAYMENTSSERVICE_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${PAYMENTSSERVICE_PORT}"
+      ConnectionStrings__messaging: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      MESSAGING_HOST: "messaging"
+      MESSAGING_PORT: "5672"
+      MESSAGING_USERNAME: "guest"
+      MESSAGING_PASSWORD: "${MESSAGING_PASSWORD}"
+      MESSAGING_URI: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      ConnectionStrings__payments-db: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=payments-db"
+      PAYMENTS-DB_HOST: "postgres"
+      PAYMENTS-DB_PORT: "5432"
+      PAYMENTS-DB_USERNAME: "postgres"
+      PAYMENTS-DB_PASSWORD: "${POSTGRES_PASSWORD}"
+      PAYMENTS-DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/payments-db"
+      PAYMENTS-DB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/payments-db"
+      PAYMENTS-DB_DATABASE: "payments-db"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "paymentsService"
+    expose:
+      - "${PAYMENTSSERVICE_PORT}"
+    depends_on:
+      postgres:
+        condition: "service_started"
+      messaging:
+        condition: "service_started"
+    networks:
+      - "my-network"
+  orderservice:
+    image: "${ORDERSERVICE_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${ORDERSERVICE_PORT}"
+      ConnectionStrings__messaging: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      MESSAGING_HOST: "messaging"
+      MESSAGING_PORT: "5672"
+      MESSAGING_USERNAME: "guest"
+      MESSAGING_PASSWORD: "${MESSAGING_PASSWORD}"
+      MESSAGING_URI: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
+      ConnectionStrings__orders-db: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=orders-db"
+      ORDERS-DB_HOST: "postgres"
+      ORDERS-DB_PORT: "5432"
+      ORDERS-DB_USERNAME: "postgres"
+      ORDERS-DB_PASSWORD: "${POSTGRES_PASSWORD}"
+      ORDERS-DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/orders-db"
+      ORDERS-DB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/orders-db"
+      ORDERS-DB_DATABASE: "orders-db"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "orderService"
+    expose:
+      - "${ORDERSERVICE_PORT}"
+    depends_on:
+      postgres:
+        condition: "service_started"
+      messaging:
+        condition: "service_started"
+    networks:
+      - "my-network"
+  ui:
+    image: "${UI_IMAGE}"
+    environment:
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES: "true"
+      OTEL_DOTNET_EXPERIMENTAL_OTLP_RETRY: "in_memory"
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      HTTP_PORTS: "${UI_PORT}"
+      GATEWAY_HTTP: "http://gateway:5000"
+      services__gateway__http__0: "http://gateway:5000"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "ui"
+    expose:
+      - "${UI_PORT}"
+    depends_on:
+      gateway:
+        condition: "service_started"
+    networks:
+      - "my-network"
+  gateway:
+    image: "mcr.microsoft.com/dotnet/nightly/yarp:2.3.0-preview.4"
+    command:
+      - "/app/yarp.dll"
+    entrypoint:
+      - "dotnet"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ORDERSERVICE_HTTP: "http://orderService:${ORDERSERVICE_PORT}"
+      REVERSEPROXY__ROUTES__route0__MATCH__PATH: "/api/orders/{**catch-all}"
+      REVERSEPROXY__ROUTES__route0__CLUSTERID: "cluster_orderService"
+      REVERSEPROXY__ROUTES__route0__TRANSFORMS__0__PathRemovePrefix: "/api"
+      REVERSEPROXY__ROUTES__route1__MATCH__PATH: "/api/payments/{**catch-all}"
+      REVERSEPROXY__ROUTES__route1__CLUSTERID: "cluster_paymentsService"
+      REVERSEPROXY__ROUTES__route1__TRANSFORMS__0__PathRemovePrefix: "/api"
+      REVERSEPROXY__ROUTES__route2__MATCH__PATH: "/{**catch-all}"
+      REVERSEPROXY__ROUTES__route2__CLUSTERID: "cluster_ui"
+      REVERSEPROXY__CLUSTERS__cluster_orderService__DESTINATIONS__destination1__ADDRESS: "https+http://orderService"
+      REVERSEPROXY__CLUSTERS__cluster_paymentsService__DESTINATIONS__destination1__ADDRESS: "https+http://paymentsService"
+      REVERSEPROXY__CLUSTERS__cluster_ui__DESTINATIONS__destination1__ADDRESS: "https+http://ui"
+      services__orderService__http__0: "http://orderService:${ORDERSERVICE_PORT}"
+      ORDERSERVICE_HTTPS: "https://orderService:${ORDERSERVICE_PORT}"
+      PAYMENTSSERVICE_HTTP: "http://paymentsService:${PAYMENTSSERVICE_PORT}"
+      services__paymentsService__http__0: "http://paymentsService:${PAYMENTSSERVICE_PORT}"
+      PAYMENTSSERVICE_HTTPS: "https://paymentsService:${PAYMENTSSERVICE_PORT}"
+      UI_HTTP: "http://ui:${UI_PORT}"
+      services__ui__http__0: "http://ui:${UI_PORT}"
+      UI_HTTPS: "https://ui:${UI_PORT}"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-dashboard:18889"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_SERVICE_NAME: "gateway"
+    ports:
+      - "8080:5000"
+    expose:
+      - "5000"
+    networks:
+      - "my-network"
+networks:
+  my-network:
+    driver: "bridge"
+volumes:
+  kpo_hw4.apphost-17cdd35e11-messaging-data:
+    driver: "local"
+  kpo_hw4.apphost-17cdd35e11-postgres-data:
+    driver: "local"

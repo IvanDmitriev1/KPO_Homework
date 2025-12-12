@@ -3,7 +3,8 @@
     <Project Path="KPO_HW4.AppHost/KPO_HW4.AppHost.csproj" />
     <Project Path="KPO_HW4.ServiceDefaults/KPO_HW4.ServiceDefaults.csproj" />
   </Folder>
-  <Project Path="KPO_HW4.Api/KPO_HW4.Api.csproj" />
   <Project Path="KPO_HW4.OrderService/KPO_HW4.OrderService.csproj" />
   <Project Path="KPO_HW4.PaymentsService/KPO_HW4.PaymentsService.csproj" />
+  <Project Path="KPO_HW4.Shared.Contracts/KPO_HW4.Shared.Contracts.csproj" Id="407a0e23-a913-4bc6-8456-f0bf30a968a4" />
+  <Project Path="KPO_HW4.Ui/KPO_HW4.Ui.csproj" />
 </Solution>

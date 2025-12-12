@@ -8,12 +8,14 @@
   <ItemGroup>
 	  <PackageReference Include="Aspire.Hosting.Docker" />
 	  <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+	  <PackageReference Include="Aspire.Hosting.RabbitMQ" />
+	  <PackageReference Include="Aspire.Hosting.Yarp" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KPO_HW4.Api\KPO_HW4.Api.csproj" />
     <ProjectReference Include="..\KPO_HW4.OrderService\KPO_HW4.OrderService.csproj" />
     <ProjectReference Include="..\KPO_HW4.PaymentsService\KPO_HW4.PaymentsService.csproj" />
+    <ProjectReference Include="..\KPO_HW4.Ui\KPO_HW4.Ui.csproj" />
   </ItemGroup>
 
 </Project>

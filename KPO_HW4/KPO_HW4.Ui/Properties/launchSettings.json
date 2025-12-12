@@ -2,22 +2,25 @@
   "profiles": {
     "http": {
       "commandName": "Project",
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5126"
+      "applicationUrl": "http://kpo_hw4_ui.dev.localhost:5241"
     },
     "https": {
       "commandName": "Project",
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7044;http://localhost:5126"
+      "applicationUrl": "https://kpo_hw4_ui.dev.localhost:7070;http://kpo_hw4_ui.dev.localhost:5241"
     },
     "Container (.NET SDK)": {
       "commandName": "SdkContainer",
+      "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
