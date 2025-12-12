@@ -1,9 +1,8 @@
 using KPO_HW4.PaymentsService.Data.Entities;
-using KPO_HW4.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace KPO_HW4.PaymentsService.Data.TypeConfigurations;
+namespace KPO_HW4.PaymentsService.Data.EntityConfigurations;
 
 internal sealed class AccountTypeConfiguration : IEntityTypeConfiguration<Account>
 {
@@ -28,5 +27,12 @@ internal sealed class AccountTypeConfiguration : IEntityTypeConfiguration<Accoun
 
         builder.HasIndex(a => a.UserId)
             .IsUnique();
+
+        builder.ToTable(t =>
+        {
+            t.HasCheckConstraint("ck_accounts_balance_non_negative", $"""
+                                                                      "{nameof(Account.BalanceMinor)}" >= 0
+                                                                      """);
+        });
     }
 }

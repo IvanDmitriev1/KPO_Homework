@@ -1,6 +1,4 @@
-using KPO_HW4.Shared.Contracts;
-
-namespace KPO_HW4.PaymentsService.Data.Entities;
+﻿namespace KPO_HW4.PaymentsService.Data.Entities;
 
 public enum PaymentTransactionType : short
 {
@@ -38,13 +36,11 @@ public sealed class PaymentTransaction
     {
         Status = PaymentTransactionStatus.Succeeded;
         FailureCode = PaymentFailureCode.None;
-        UpdatedAt = DateTimeOffset.UtcNow;
     }
     public void MarkFailed(PaymentFailureCode code)
     {
         Status = PaymentTransactionStatus.Failed;
         FailureCode = code;
-        UpdatedAt = DateTimeOffset.UtcNow;
     }
 
     public static PaymentTransaction CreateTopUp(AccountId accountId, Int64 amountMinor)

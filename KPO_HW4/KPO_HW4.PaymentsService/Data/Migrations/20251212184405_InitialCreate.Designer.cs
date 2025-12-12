@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KPO_HW4.PaymentsService.Data.Migrations
 {
     [DbContext(typeof(PaymentsDbContext))]
-    [Migration("20251212172141_InitialCreate")]
+    [Migration("20251212184405_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -42,7 +42,10 @@ namespace KPO_HW4.PaymentsService.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", t =>
+                        {
+                            t.HasCheckConstraint("ck_accounts_balance_non_negative", "\"BalanceMinor\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("KPO_HW4.PaymentsService.Data.Entities.PaymentTransaction", b =>
@@ -75,7 +78,7 @@ namespace KPO_HW4.PaymentsService.Data.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("now()");
 

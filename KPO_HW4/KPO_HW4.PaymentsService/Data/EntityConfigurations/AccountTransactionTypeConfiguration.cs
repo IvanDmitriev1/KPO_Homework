@@ -1,9 +1,8 @@
 using KPO_HW4.PaymentsService.Data.Entities;
-using KPO_HW4.Shared.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace KPO_HW4.PaymentsService.Data.TypeConfigurations;
+namespace KPO_HW4.PaymentsService.Data.EntityConfigurations;
 
 internal class AccountTransactionTypeConfiguration : IEntityTypeConfiguration<PaymentTransaction>
 {
@@ -49,7 +48,7 @@ internal class AccountTransactionTypeConfiguration : IEntityTypeConfiguration<Pa
         builder.Property(x => x.UpdatedAt)
             .IsRequired()
             .HasDefaultValueSql("now()")
-            .ValueGeneratedOnAdd();
+            .ValueGeneratedOnAddOrUpdate();
 
 
 

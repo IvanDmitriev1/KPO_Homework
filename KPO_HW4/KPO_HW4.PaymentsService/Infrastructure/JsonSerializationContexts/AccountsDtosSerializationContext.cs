@@ -1,5 +1,4 @@
-using KPO_HW4.PaymentsService.Features.Accounts;
-using KPO_HW4.Shared.Contracts;
+﻿using KPO_HW4.PaymentsService.Features.Accounts;
 using System.Text.Json.Serialization;
 
 namespace KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;

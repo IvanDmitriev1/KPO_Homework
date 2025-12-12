@@ -1,6 +1,5 @@
 using KPO_HW4.PaymentsService.Data;
 using KPO_HW4.PaymentsService.Data.Entities;
-using KPO_HW4.Shared.Contracts;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -84,7 +83,7 @@ public static class AccountsEndpoints
 
         paymentTransaction.MarkSucceeded();
         await db.SaveChangesAsync(ct);
-
+            
         var balance = await GetBalanceByUserId(db, req.UserId, ct);
         return TypedResults.Ok(new BalanceResponse(req.UserId, balance!.Value));
     }

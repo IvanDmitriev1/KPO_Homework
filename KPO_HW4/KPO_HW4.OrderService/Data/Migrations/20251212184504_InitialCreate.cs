@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace KPO_HW4.PaymentsService.Data.Migrations
+namespace KPO_HW4.OrderService.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -12,19 +12,6 @@ namespace KPO_HW4.PaymentsService.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Accounts",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    BalanceMinor = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Accounts", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "InboxState",
                 columns: table => new
@@ -34,7 +21,7 @@ namespace KPO_HW4.PaymentsService.Data.Migrations
                     MessageId = table.Column<Guid>(type: "uuid", nullable: false),
                     ConsumerId = table.Column<Guid>(type: "uuid", nullable: false),
                     LockId = table.Column<Guid>(type: "uuid", nullable: false),
-                    RowVersion = table.Column<byte[]>(type: "bytea", rowVersion: true, nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "bytea", nullable: true),
                     Received = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ReceiveCount = table.Column<int>(type: "integer", nullable: false),
                     ExpirationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -46,6 +33,24 @@ namespace KPO_HW4.PaymentsService.Data.Migrations
                 {
                     table.PrimaryKey("PK_InboxState", x => x.Id);
                     table.UniqueConstraint("AK_InboxState_MessageId_ConsumerId", x => new { x.MessageId, x.ConsumerId });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AmountMinor = table.Column<long>(type: "bigint", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<short>(type: "smallint", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.CheckConstraint("ck_orders_amount_positive", "\"AmountMinor\" > 0");
                 });
 
             migrationBuilder.CreateTable(
@@ -62,25 +67,6 @@ namespace KPO_HW4.PaymentsService.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OutboxState", x => x.OutboxId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Transactions",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AccountId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReferenceId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Type = table.Column<short>(type: "smallint", nullable: false),
-                    AmountMinor = table.Column<long>(type: "bigint", nullable: false),
-                    Status = table.Column<short>(type: "smallint", nullable: false),
-                    FailureCode = table.Column<short>(type: "smallint", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
-                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transactions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,15 +112,9 @@ namespace KPO_HW4.PaymentsService.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Accounts_UserId",
-                table: "Accounts",
-                column: "UserId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InboxState_Delivered",
-                table: "InboxState",
-                column: "Delivered");
+                name: "IX_Orders_UserId",
+                table: "Orders",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OutboxMessage_EnqueueTime",
@@ -162,25 +142,16 @@ namespace KPO_HW4.PaymentsService.Data.Migrations
                 name: "IX_OutboxState_Created",
                 table: "OutboxState",
                 column: "Created");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transactions_ReferenceId",
-                table: "Transactions",
-                column: "ReferenceId",
-                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Accounts");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "OutboxMessage");
-
-            migrationBuilder.DropTable(
-                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "InboxState");

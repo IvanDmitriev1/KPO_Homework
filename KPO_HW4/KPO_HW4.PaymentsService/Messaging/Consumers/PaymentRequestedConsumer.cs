@@ -1,7 +1,6 @@
-using EntityFramework.Exceptions.Common;
+﻿using EntityFramework.Exceptions.Common;
 using KPO_HW4.PaymentsService.Data;
 using KPO_HW4.PaymentsService.Data.Entities;
-using KPO_HW4.Shared.Contracts;
 using KPO_HW4.Shared.Contracts.Messaging;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;

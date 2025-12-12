@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using KPO_HW4.Shared.Contracts;
 using KPO_HW4.Shared.Contracts.Messaging;
 
 namespace KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;

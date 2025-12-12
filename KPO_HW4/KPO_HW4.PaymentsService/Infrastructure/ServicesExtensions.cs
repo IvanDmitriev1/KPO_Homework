@@ -1,7 +1,6 @@
-using KPO_HW4.PaymentsService.Data;
+﻿using KPO_HW4.PaymentsService.Data;
 using KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;
 using KPO_HW4.PaymentsService.Messaging.Consumers;
-using KPO_HW4.Shared.Contracts;
 using MassTransit;
 
 namespace KPO_HW4.PaymentsService.Infrastructure;

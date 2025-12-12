@@ -1,5 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using KPO_HW4.Shared.Contracts;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace KPO_HW4.PaymentsService.Features.Accounts;
 
