@@ -1,14 +1,9 @@
-using EntityFramework.Exceptions.PostgreSQL;
-using KPO_HW4.OrderService.Data;
+using KPO_HW4.OrderService.Features.Orders;
+using KPO_HW4.OrderService.Infrastructure;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddNpgsqlDbContext<OrdersDbContext>("payments-db",
-    settings => { },
-    optionsBuilder =>
-    {
-        optionsBuilder.UseExceptionProcessor();
-    });
-
+builder.AddInfrastructure();
 
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
@@ -19,6 +14,16 @@ app.MapDefaultEndpoints();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.Theme = ScalarTheme.Moon;
+        options.Layout = ScalarLayout.Modern;
+        options.WithDynamicBaseServerUrl();
+    });
 }
+
+app.MapOrdersEndpoints();
+
+app.MapGet("/", () => TypedResults.Redirect("/scalar", true));
 
 app.Run();

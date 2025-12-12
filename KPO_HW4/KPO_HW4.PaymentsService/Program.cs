@@ -1,21 +1,12 @@
-using EntityFramework.Exceptions.PostgreSQL;
-using KPO_HW4.PaymentsService.Data;
 using KPO_HW4.PaymentsService.Features.Accounts;
 using KPO_HW4.PaymentsService.Infrastructure;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.AddNpgsqlDbContext<PaymentsDbContext>("payments-db",
-    settings => {},
-    optionsBuilder =>
-{
-    optionsBuilder.UseExceptionProcessor();
-});
-
+builder.AddInfrastructure();
 
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
-builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 app.MapDefaultEndpoints();

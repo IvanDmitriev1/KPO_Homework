@@ -1,4 +1,5 @@
-﻿using KPO_HW4.PaymentsService.Data;
+using EntityFramework.Exceptions.PostgreSQL;
+using KPO_HW4.PaymentsService.Data;
 using KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;
 using KPO_HW4.PaymentsService.Messaging.Consumers;
 using MassTransit;
@@ -7,25 +8,25 @@ namespace KPO_HW4.PaymentsService.Infrastructure;
 
 public static class ServicesExtensions
 {
-    extension(IServiceCollection services)
+    public static void AddInfrastructure(this IHostApplicationBuilder builder)
     {
-        public IServiceCollection AddInfrastructure(IConfiguration configuration)
+        builder.AddNpgsqlDbContext<PaymentsDbContext>("payments-db",
+            settings => { },
+            optionsBuilder => { optionsBuilder.UseExceptionProcessor(); });
+
+        builder.Services.AddHostedService<Migrator>();
+        builder.Services.AddPaymentsMessaging(builder.Configuration);
+
+        builder.Services.AddControllers().AddJsonOptions(options =>
         {
-            services.AddHostedService<Migrator>();
-            services.AddPaymentsMessaging(configuration);
+            var chain = options.JsonSerializerOptions.TypeInfoResolverChain;
 
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                var chain = options.JsonSerializerOptions.TypeInfoResolverChain;
+            chain.Add(ContractsJsonSerializerContext.Default);
+        });
+    }
 
-                chain.Add(ContractsJsonSerializerContext.Default);
-                chain.Add(AccountsDtosSerializationContext.Default);
-            });
-
-            return services;
-        }
-
-        private void AddPaymentsMessaging(IConfiguration configuration) => services.AddMassTransit(c =>
+    private static void AddPaymentsMessaging(this IServiceCollection services, IConfiguration configuration) =>
+        services.AddMassTransit(c =>
         {
             c.AddConsumer<PaymentRequestedConsumer>();
 
@@ -47,9 +48,9 @@ public static class ServicesExtensions
 
             c.UsingRabbitMq((context, busCfg) =>
             {
-                busCfg.Host(new Uri(rabbitMqConnectionString ?? throw new InvalidOperationException("rabbitMqConnectionString is null")));
+                busCfg.Host(new Uri(rabbitMqConnectionString ??
+                                    throw new InvalidOperationException("rabbitMqConnectionString is null")));
                 busCfg.ConfigureEndpoints(context);
             });
         });
-    }
 }

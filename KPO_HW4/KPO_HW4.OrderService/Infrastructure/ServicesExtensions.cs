@@ -1,0 +1,58 @@
+using EntityFramework.Exceptions.PostgreSQL;
+using KPO_HW4.OrderService.Data;
+using KPO_HW4.OrderService.Infrastructure.JsonSerializationContexts;
+using KPO_HW4.OrderService.Messaging.Consumers;
+using MassTransit;
+
+namespace KPO_HW4.OrderService.Infrastructure;
+
+public static class ServicesExtensions
+{
+    public static void AddInfrastructure(this IHostApplicationBuilder builder)
+    {
+        builder.AddNpgsqlDbContext<OrdersDbContext>("orders-db",
+            settings => { },
+            optionsBuilder =>
+            {
+                optionsBuilder.UseExceptionProcessor();
+            });
+
+        builder.Services.AddHostedService<Migrator>();
+        builder.Services.AddPaymentsMessaging(builder.Configuration);
+
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            var chain = options.JsonSerializerOptions.TypeInfoResolverChain;
+
+            chain.Add(ContractsJsonSerializerContext.Default);
+        });
+    }
+
+    private static void AddPaymentsMessaging(this IServiceCollection services, IConfiguration configuration) => services.AddMassTransit(c =>
+    {
+        c.AddConsumer<PaymentSucceededConsumer>();
+        c.AddConsumer<PaymentFailedConsumer>();
+
+        c.AddEntityFrameworkOutbox<OrdersDbContext>(o =>
+        {
+            o.UsePostgres();
+            o.UseBusOutbox();
+
+            o.DuplicateDetectionWindow = TimeSpan.FromMinutes(30);
+            o.QueryDelay = TimeSpan.FromSeconds(1);
+        });
+
+        c.AddConfigureEndpointsCallback((context, name, endpointCfg) =>
+        {
+            endpointCfg.UseEntityFrameworkOutbox<OrdersDbContext>(context);
+        });
+
+        var rabbitMqConnectionString = configuration.GetConnectionString("messaging");
+
+        c.UsingRabbitMq((context, busCfg) =>
+        {
+            busCfg.Host(new Uri(rabbitMqConnectionString ?? throw new InvalidOperationException("rabbitMqConnectionString is null")));
+            busCfg.ConfigureEndpoints(context);
+        });
+    });
+}
