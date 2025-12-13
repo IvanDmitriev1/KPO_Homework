@@ -1,4 +1,6 @@
 using KPO_HW4.OrderService.Features.Orders;
+using KPO_HW4.OrderService.Features.Orders.Abstractions;
+using KPO_HW4.OrderService.Features.Orders.SignalR;
 using KPO_HW4.OrderService.Infrastructure;
 using Scalar.AspNetCore;
 
@@ -7,6 +9,13 @@ builder.AddInfrastructure();
 
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
+
+builder.Services.AddSignalR(options =>
+{
+    
+});
+
+builder.Services.AddScoped<IOrderPushNotifier, SignalROrderPushNotifier>();
 
 var app = builder.Build();
 app.MapDefaultEndpoints();

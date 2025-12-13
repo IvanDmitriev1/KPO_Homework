@@ -1,0 +1,16 @@
+﻿using KPO_HW4.OrderService.Features.Orders.Abstractions;
+using KPO_HW4.OrderService.Features.Orders.Models;
+using Microsoft.AspNetCore.SignalR;
+
+namespace KPO_HW4.OrderService.Features.Orders.SignalR;
+
+public sealed class SignalROrderPushNotifier(IHubContext<OrdersHub> hub) : IOrderPushNotifier
+{
+    public Task StatusChanged(OrderStatusChangedPush payload, CancellationToken ct)
+    {
+        return hub.Clients.Groups(
+                OrdersHub.UserGroup(payload.UserId),
+                OrdersHub.OrderGroup(payload.OrderId))
+            .SendAsync("OrderStatusChanged", payload, ct);
+    }
+}

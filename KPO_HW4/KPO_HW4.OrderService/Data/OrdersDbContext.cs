@@ -1,4 +1,3 @@
-using KPO_HW4.OrderService.Data.Entities;
 using KPO_HW4.OrderService.Data.EntityConfigurations;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;

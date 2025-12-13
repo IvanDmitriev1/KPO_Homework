@@ -1,7 +1,8 @@
 using EntityFramework.Exceptions.PostgreSQL;
 using KPO_HW4.PaymentsService.Data;
+using KPO_HW4.PaymentsService.Features.Accounts.Consumers;
+using KPO_HW4.PaymentsService.Features.Accounts.Models;
 using KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;
-using KPO_HW4.PaymentsService.Messaging.Consumers;
 using MassTransit;
 
 namespace KPO_HW4.PaymentsService.Infrastructure;
@@ -22,13 +23,17 @@ public static class ServicesExtensions
             var chain = options.JsonSerializerOptions.TypeInfoResolverChain;
 
             chain.Add(ContractsJsonSerializerContext.Default);
+            chain.Add(AccountsDtosSerializationContext.Default);
         });
     }
 
     private static void AddPaymentsMessaging(this IServiceCollection services, IConfiguration configuration) =>
         services.AddMassTransit(c =>
         {
-            c.AddConsumer<PaymentRequestedConsumer>();
+            c.AddConsumer<PaymentRequestedConsumer>(cfg =>
+            {
+                cfg.UseMessageRetry(r => r.Intervals(100, 300, 1000, 2000));
+            });
 
             c.AddEntityFrameworkOutbox<PaymentsDbContext>(o =>
             {

@@ -1,6 +1,4 @@
-using KPO_HW4.OrderService.Data.Entities;
-using KPO_HW4.Shared.Contracts;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace KPO_HW4.OrderService.Data.EntityConfigurations;

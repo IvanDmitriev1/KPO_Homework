@@ -1,5 +1,6 @@
 using KPO_HW4.PaymentsService.Data;
 using KPO_HW4.PaymentsService.Data.Entities;
+using KPO_HW4.PaymentsService.Features.Accounts.Models;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

@@ -1,7 +1,7 @@
 using KPO_HW4.OrderService.Data;
-using KPO_HW4.OrderService.Data.Entities;
+using KPO_HW4.OrderService.Features.Orders.Models;
+using KPO_HW4.OrderService.Features.Orders.SignalR;
 using KPO_HW4.OrderService.Infrastructure.Extensions;
-using KPO_HW4.Shared.Contracts;
 using KPO_HW4.Shared.Contracts.Messaging;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -26,6 +26,9 @@ public static class OrdersEndpoints
 
         group.MapGet("/{orderId}", GetOrderStatus)
             .WithDescription("Get order status");
+
+
+        group.MapHub<OrdersHub>("/ws/notifications/{userId}");
 
         return app;
     }

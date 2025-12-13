@@ -1,11 +1,13 @@
 using KPO_HW4.OrderService.Data;
+using KPO_HW4.OrderService.Features.Orders.Abstractions;
+using KPO_HW4.OrderService.Features.Orders.Models;
 using KPO_HW4.Shared.Contracts.Messaging;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace KPO_HW4.OrderService.Messaging.Consumers;
+namespace KPO_HW4.OrderService.Features.Orders.Consumers;
 
-public sealed class PaymentSucceededConsumer(OrdersDbContext db) : IConsumer<PaymentSucceeded>
+public sealed class PaymentSucceededConsumer(OrdersDbContext db, IOrderPushNotifier pushNotifier) : IConsumer<PaymentSucceeded>
 {
     public async Task Consume(ConsumeContext<PaymentSucceeded> context)
     {
@@ -19,5 +21,7 @@ public sealed class PaymentSucceededConsumer(OrdersDbContext db) : IConsumer<Pay
 
         order.MarkFinished();
         await db.SaveChangesAsync(context.CancellationToken);
+        await pushNotifier.StatusChanged(
+            new OrderStatusChangedPush(order.Id, order.UserId, order.Status), context.CancellationToken);
     }
 }

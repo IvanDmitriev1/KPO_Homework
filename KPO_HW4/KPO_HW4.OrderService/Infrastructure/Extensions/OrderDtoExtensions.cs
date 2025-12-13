@@ -1,5 +1,4 @@
-using KPO_HW4.OrderService.Data.Entities;
-using KPO_HW4.OrderService.Features.Orders;
+using KPO_HW4.OrderService.Features.Orders.Models;
 using System.Linq.Expressions;
 
 namespace KPO_HW4.OrderService.Infrastructure.Extensions;

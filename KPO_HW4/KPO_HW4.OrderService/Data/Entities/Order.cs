@@ -1,6 +1,4 @@
-using KPO_HW4.Shared.Contracts;
-
-namespace KPO_HW4.OrderService.Data.Entities;
+﻿namespace KPO_HW4.OrderService.Data.Entities;
 
 public enum OrderStatus : short
 {
