@@ -1,7 +1,5 @@
 using EntityFramework.Exceptions.PostgreSQL;
-using KPO_HW4.PaymentsService.Data;
-using KPO_HW4.PaymentsService.Features.Accounts.Consumers;
-using KPO_HW4.PaymentsService.Features.Accounts.Models;
+using KPO_HW4.PaymentsService.AccountsFeature.Consumers;
 using KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;
 using MassTransit;
 

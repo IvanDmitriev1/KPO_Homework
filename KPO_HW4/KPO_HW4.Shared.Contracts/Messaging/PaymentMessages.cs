@@ -1,3 +1,5 @@
+using KPO_HW4.Shared.Contracts.Common;
+
 namespace KPO_HW4.Shared.Contracts.Messaging;
 
 public sealed record PaymentRequested(

@@ -1,14 +1,11 @@
-using KPO_HW4.OrderService.Data;
-using KPO_HW4.OrderService.Features.Orders.Models;
-using KPO_HW4.OrderService.Features.Orders.SignalR;
 using KPO_HW4.OrderService.Infrastructure.Extensions;
-using KPO_HW4.Shared.Contracts.Messaging;
+using KPO_HW4.OrderService.OrdersFeature.SignalR;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KPO_HW4.OrderService.Features.Orders;
+namespace KPO_HW4.OrderService.OrdersFeature;
 
 public static class OrdersEndpoints
 {

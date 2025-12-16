@@ -1,7 +1,6 @@
 using EntityFramework.Exceptions.PostgreSQL;
-using KPO_HW4.OrderService.Data;
-using KPO_HW4.OrderService.Features.Orders.Consumers;
 using KPO_HW4.OrderService.Infrastructure.JsonSerializationContexts;
+using KPO_HW4.OrderService.OrdersFeature.Consumers;
 using MassTransit;
 
 namespace KPO_HW4.OrderService.Infrastructure;

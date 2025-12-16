@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace KPO_HW4.PaymentsService.Features.Accounts.Models;
+namespace KPO_HW4.OrderService.OrdersFeature.Models;
 
 [JsonSourceGenerationOptions(
     WriteIndented = true,
@@ -11,7 +11,8 @@ namespace KPO_HW4.PaymentsService.Features.Accounts.Models;
         typeof(AccountId.AccountIdSystemTextJsonConverter),
         typeof(OrderId.OrderIdSystemTextJsonConverter),
         typeof(PaymentTransactionId.PaymentTransactionIdSystemTextJsonConverter)])]
-[JsonSerializable(typeof(CreateAccountResponse))]
-[JsonSerializable(typeof(TopUpRequest))]
-[JsonSerializable(typeof(BalanceResponse))]
-public partial class AccountsDtosSerializationContext : JsonSerializerContext { }
+[JsonSerializable(typeof(CreateOrderRequest))]
+[JsonSerializable(typeof(CreateOrderResponse))]
+[JsonSerializable(typeof(List<OrderDto>))]
+[JsonSerializable(typeof(OrderStatusChangedPush))]
+public partial class OrdersJsonSerializerContext : JsonSerializerContext { }

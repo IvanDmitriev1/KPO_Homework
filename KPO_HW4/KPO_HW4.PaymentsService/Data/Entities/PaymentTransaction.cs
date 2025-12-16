@@ -1,4 +1,4 @@
-﻿namespace KPO_HW4.PaymentsService.Data.Entities;
+namespace KPO_HW4.PaymentsService.Data.Entities;
 
 public enum PaymentTransactionType : short
 {

@@ -1,4 +1,4 @@
-using KPO_HW4.PaymentsService.Features.Accounts;
+using KPO_HW4.PaymentsService.AccountsFeature;
 using KPO_HW4.PaymentsService.Infrastructure;
 using Scalar.AspNetCore;
 

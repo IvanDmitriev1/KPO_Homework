@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace KPO_HW4.OrderService.Features.Orders.SignalR;
+namespace KPO_HW4.OrderService.OrdersFeature.SignalR;
 
 public sealed class OrdersHub : Hub
 {

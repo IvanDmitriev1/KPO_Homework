@@ -1,8 +1,6 @@
-﻿using KPO_HW4.OrderService.Features.Orders.Abstractions;
-using KPO_HW4.OrderService.Features.Orders.Models;
 using Microsoft.AspNetCore.SignalR;
 
-namespace KPO_HW4.OrderService.Features.Orders.SignalR;
+namespace KPO_HW4.OrderService.OrdersFeature.SignalR;
 
 public sealed class SignalROrderPushNotifier(IHubContext<OrdersHub> hub) : IOrderPushNotifier
 {

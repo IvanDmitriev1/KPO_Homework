@@ -1,9 +1,7 @@
-using KPO_HW4.OrderService.Data;
-using KPO_HW4.Shared.Contracts.Messaging;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace KPO_HW4.OrderService.Features.Orders.Consumers;
+namespace KPO_HW4.OrderService.OrdersFeature.Consumers;
 
 public sealed class PaymentFailedConsumer(OrdersDbContext db) : IConsumer<PaymentFailed>
 {
