@@ -1,0 +1,71 @@
+<Project>
+
+	<PropertyGroup>
+		<IsLinux>$([MSBuild]::IsOSPlatform('Linux'))</IsLinux>
+		<IsWindows>$([MSBuild]::IsOSPlatform('Windows'))</IsWindows>
+		<IsOSX>$([MSBuild]::IsOSPlatform('OSX'))</IsOSX>
+		<OSArch>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</OSArch>
+
+		<TailwindVersion Condition="'$(TailwindVersion)' == ''">v4.1.11</TailwindVersion>
+		<TailwindInput Condition="'$(TailwindInput)' == ''">Styles/globals.css</TailwindInput>
+		<TailwindOutput Condition="'$(TailwindOutput)' == ''">wwwroot/css/docs.css</TailwindOutput>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<TailwindLocalExeWin>$(MSBuildProjectDirectory)/tailwindcss.exe</TailwindLocalExeWin>
+		<TailwindLocalExeNix>$(MSBuildProjectDirectory)/tailwindcss</TailwindLocalExeNix>
+	</PropertyGroup>
+
+	<Target Name="InstallTailwind"
+			AfterTargets="Build"
+			Condition="!Exists('$(TailwindLocalExeWin)') AND !Exists('$(TailwindLocalExeNix)')">
+
+		<PropertyGroup>
+			<!-- Windows -->
+			<TailwindExe Condition="'$(IsWindows)' == 'true'">tailwindcss-windows-x64.exe</TailwindExe>
+
+			<!-- Linux -->
+			<TailwindExe Condition="'$(IsLinux)' == 'true' AND '$(OSArch)' == 'Arm64'">tailwindcss-linux-arm64</TailwindExe>
+			<TailwindExe Condition="'$(IsLinux)' == 'true' AND '$(OSArch)' != 'Arm64'">tailwindcss-linux-x64</TailwindExe>
+
+			<!-- macOS -->
+			<TailwindExe Condition="'$(IsOSX)' == 'true' AND '$(OSArch)' == 'Arm64'">tailwindcss-macos-arm64</TailwindExe>
+			<TailwindExe Condition="'$(IsOSX)' == 'true' AND '$(OSArch)' != 'Arm64'">tailwindcss-macos-x64</TailwindExe>
+
+			<TailwindUrl>https://github.com/tailwindlabs/tailwindcss/releases/download/$(TailwindVersion)/$(TailwindExe)</TailwindUrl>
+		</PropertyGroup>
+
+		<!-- Скачиваем в папку проекта -->
+		<Exec WorkingDirectory="$(MSBuildProjectDirectory)"
+			  Command="curl -fL -O &quot;$(TailwindUrl)&quot;" />
+
+		<!-- Переименования -->
+		<Exec WorkingDirectory="$(MSBuildProjectDirectory)"
+			  Command="ren &quot;$(TailwindExe)&quot; tailwindcss.exe"
+			  Condition="'$(IsWindows)' == 'true'" />
+
+		<Exec WorkingDirectory="$(MSBuildProjectDirectory)"
+			  Command="mv &quot;$(TailwindExe)&quot; tailwindcss"
+			  Condition="'$(IsLinux)' == 'true' OR '$(IsOSX)' == 'true'" />
+
+		<Exec WorkingDirectory="$(MSBuildProjectDirectory)"
+			  Command="chmod +x tailwindcss"
+			  Condition="'$(IsLinux)' == 'true' OR '$(IsOSX)' == 'true'" />
+	</Target>
+
+	<Target Name="RunTailwind" AfterTargets="InstallTailwind">
+		<PropertyGroup>
+			<TailwindCmd Condition="'$(IsWindows)' == 'true'">tailwindcss.exe</TailwindCmd>
+			<TailwindCmd Condition="'$(IsLinux)' == 'true' OR '$(IsOSX)' == 'true'">./tailwindcss</TailwindCmd>
+		</PropertyGroup>
+
+		<Exec WorkingDirectory="$(MSBuildProjectDirectory)"
+		      Command="&quot;$(TailwindCmd)&quot; -i &quot;$(TailwindInput)&quot; -o &quot;$(TailwindOutput)&quot;"
+		      Condition="'$(Configuration)' == 'Debug'" />
+
+		<Exec WorkingDirectory="$(MSBuildProjectDirectory)"
+		      Command="&quot;$(TailwindCmd)&quot; -i &quot;$(TailwindInput)&quot; -o &quot;$(TailwindOutput)&quot; --minify"
+		      Condition="'$(Configuration)' == 'Release'" />
+	</Target>
+
+</Project>

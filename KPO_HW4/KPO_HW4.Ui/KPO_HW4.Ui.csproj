@@ -18,13 +18,15 @@
     <PackageReference Include="LumexUI" />
   </ItemGroup>
 
-	<Target Name="InstallTailwind" AfterTargets="Build" Condition="!Exists('tailwindcss.exe')">
-		<Exec Command="curl -LO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe" />
-		<Exec Command="ren tailwindcss-windows-x64.exe tailwindcss.exe" />
-	</Target>
+  <ItemGroup>
+    <Folder Include="wwwroot\css\" />
+  </ItemGroup>
 
-	<Target Name="RunTailwind" AfterTargets="InstallTailwind">
-		<Exec Command="tailwindcss -i ./wwwroot/globals.css -o ./wwwroot/css/app.css" />
-	</Target>
 
+	<PropertyGroup>
+		<TailwindInput>wwwroot/globals.css</TailwindInput>
+		<TailwindOutput>wwwroot/css/app.css</TailwindOutput>
+	</PropertyGroup>
+
+	<Import Project="TailwindCli.targets" />
 </Project>
