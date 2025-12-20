@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 @import "../bin/lumexui/theme"; /* theme */
 @source "../bin/lumexui/*.cs"; /* styles */
 
@@ -31,3 +31,42 @@
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+.blazored-toast .blazored-toast-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    cursor: pointer;
+}
+
+.blazored-toast-container.position-topright {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    pointer-events: none;
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
+}
+
+    .blazored-toast-container.position-topright .blazored-toast {
+        pointer-events: auto;
+    }
+
+@media (max-width: 640px) {
+    .blazored-toast-container.position-topright {
+        left: 1rem;
+        right: 1rem;
+        top: 0.75rem;
+        align-items: center;
+    }
+
+        .blazored-toast-container.position-topright .blazored-toast {
+            width: 100%;
+            max-width: 28rem;
+        }
+}

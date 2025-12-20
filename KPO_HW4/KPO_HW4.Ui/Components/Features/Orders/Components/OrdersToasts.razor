@@ -1,0 +1,48 @@
+@rendermode InteractiveServer
+@inherits CancellableComponentBase
+@inject IToastService ToastService
+@inject IUserContext UserContext
+@inject IOrdersRealtimeClient OrdersRealtimeClient
+
+@code {
+
+	private IDisposable? _subscription;
+
+	protected override void Dispose(bool disposing)
+	{
+		if (disposing)
+		{
+			_subscription?.Dispose();
+		}
+
+		base.Dispose(disposing);
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (!firstRender)
+			return;
+
+		var userId = await UserContext.GetUserIdAsync(CancellationToken);
+		await OrdersRealtimeClient.ConnectAsync(userId, CancellationToken);
+
+		_subscription = OrdersRealtimeClient.SubscribeToOrderStatusChange(Handler);
+	}
+
+	private void Handler(OrderStatusChangedPush args)
+	{
+		ToastLevel level = args.Status switch
+		{
+			OrderStatus.New => ToastLevel.Info,
+			OrderStatus.Finished => ToastLevel.Success,
+			OrderStatus.Cancelled => ToastLevel.Error,
+			_ => throw new ArgumentOutOfRangeException()
+		};
+
+		ToastService.ShowToast(level, $"Order {args.OrderId} changed status to {args.Status}", settings =>
+		{
+			settings.Timeout = 60;
+		});
+	}
+
+}

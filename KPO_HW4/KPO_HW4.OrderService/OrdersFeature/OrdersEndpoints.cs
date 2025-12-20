@@ -4,6 +4,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace KPO_HW4.OrderService.OrdersFeature;
 
@@ -25,7 +26,7 @@ public static class OrdersEndpoints
             .WithDescription("Get order status");
 
 
-        group.MapHub<OrdersHub>("/ws/notifications/{userId}");
+        group.MapHub<OrdersHub>("/hub/orderNotifications/{userId}");
 
         return app;
     }
@@ -34,6 +35,7 @@ public static class OrdersEndpoints
         [FromForm] CreateOrderRequest req,
         [FromServices] OrdersDbContext db,
         [FromServices] IPublishEndpoint publish,
+        [FromServices] IOrderPushNotifier notifier,
         CancellationToken ct)
     {
         var order = new Order()
@@ -50,6 +52,9 @@ public static class OrdersEndpoints
             order.UserId,
             order.AmountMinor,
             DateTimeOffset.UtcNow), ct);
+
+        await notifier.StatusChanged(
+            new OrderStatusChangedPush(order.Id, order.UserId, order.Status), ct);
 
         await db.SaveChangesAsync(ct);
 

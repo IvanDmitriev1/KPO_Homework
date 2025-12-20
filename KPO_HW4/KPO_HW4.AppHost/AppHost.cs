@@ -44,7 +44,6 @@ var ordersService = builder.AddProject<Projects.KPO_HW4_OrderService>("orderServ
     .PublishAsDockerComposeService((resource, service) => { });
 
 var ui = builder.AddProject<Projects.KPO_HW4_Ui>("ui")
-    .WithReference(ordersService)
     .PublishAsDockerComposeService((resource, service) => { });
 
 var gateway = builder.AddYarp("gateway")

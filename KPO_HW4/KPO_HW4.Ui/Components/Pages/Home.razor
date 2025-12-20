@@ -1,7 +1,25 @@
-﻿@page "/"
+@page "/"
+@using Blazored.Toast.Configuration
+@inject IToastService ToastService
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<LumexButton OnClick="Callback"></LumexButton>
+
+@code
+{
+
+	private void Callback()
+	{
+		ToastService.ShowError("Hi", settings =>
+		{
+			settings.DisableTimeout = true;
+			settings.ShowCloseButton = true;
+		});
+	}
+}

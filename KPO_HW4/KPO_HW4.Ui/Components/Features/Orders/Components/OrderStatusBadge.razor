@@ -1,0 +1,24 @@
+<span class="@Css">
+	@Text
+</span>
+
+@code {
+	[Parameter, EditorRequired]
+    public OrderStatus Status { get; set; }
+
+	private string Text => Status switch
+	{
+		OrderStatus.New => "New",
+		OrderStatus.Finished => "Finished",
+		OrderStatus.Cancelled => "Cancelled",
+		_ => "Unknown"
+	};
+
+	private string Css => Status switch
+	{
+		OrderStatus.New => "inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-700",
+		OrderStatus.Finished => "inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-emerald-100 text-emerald-700",
+		OrderStatus.Cancelled => "inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-red-100 text-red-700",
+		_ => "inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-gray-100 text-gray-700"
+	};
+}
