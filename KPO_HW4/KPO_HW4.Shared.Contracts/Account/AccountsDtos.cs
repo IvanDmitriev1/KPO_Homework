@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using KPO_HW4.Shared.Contracts.Common;
 
-namespace KPO_HW4.PaymentsService.AccountsFeature.Models;
+namespace KPO_HW4.Shared.Contracts.Account;
 
 public sealed record CreateAccountResponse(AccountId AccountId, UserId UserId);
 

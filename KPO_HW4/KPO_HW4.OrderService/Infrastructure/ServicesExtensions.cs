@@ -2,6 +2,7 @@ using EntityFramework.Exceptions.PostgreSQL;
 using KPO_HW4.OrderService.Infrastructure.JsonSerializationContexts;
 using KPO_HW4.OrderService.OrdersFeature.Consumers;
 using MassTransit;
+using Microsoft.AspNetCore.Http.Json;
 
 namespace KPO_HW4.OrderService.Infrastructure;
 
@@ -19,11 +20,11 @@ public static class ServicesExtensions
         builder.Services.AddHostedService<Migrator>();
         builder.Services.AddPaymentsMessaging(builder.Configuration);
 
-        builder.Services.AddControllers().AddJsonOptions(options =>
+        builder.Services.Configure<JsonOptions>(options =>
         {
-            var chain = options.JsonSerializerOptions.TypeInfoResolverChain;
-
+            var chain = options.SerializerOptions.TypeInfoResolverChain;
             chain.Add(ContractsJsonSerializerContext.Default);
+            chain.Add(OrdersJsonSerializerContext.Default);
         });
     }
 

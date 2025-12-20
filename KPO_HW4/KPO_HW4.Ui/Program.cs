@@ -1,4 +1,5 @@
 using KPO_HW4.Ui.Components;
+using KPO_HW4.Ui.Infrastructure;
 using LumexUI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddLumexServices();
+builder.AddInfrastructure();
 
 var app = builder.Build();
 app.MapDefaultEndpoints();

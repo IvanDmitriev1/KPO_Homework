@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KPO_HW4.ServiceDefaults\KPO_HW4.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\KPO_HW4.Shared.Contracts\KPO_HW4.Shared.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

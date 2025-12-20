@@ -21,6 +21,7 @@ var rabbitmq = builder
 
 var postgres = builder
     .AddPostgres("postgres")
+    .WithPgAdmin()
     .WithDataVolume()
     .PublishAsDockerComposeService((resource, service) => { });
 
@@ -43,6 +44,7 @@ var ordersService = builder.AddProject<Projects.KPO_HW4_OrderService>("orderServ
     .PublishAsDockerComposeService((resource, service) => { });
 
 var ui = builder.AddProject<Projects.KPO_HW4_Ui>("ui")
+    .WithReference(ordersService)
     .PublishAsDockerComposeService((resource, service) => { });
 
 var gateway = builder.AddYarp("gateway")

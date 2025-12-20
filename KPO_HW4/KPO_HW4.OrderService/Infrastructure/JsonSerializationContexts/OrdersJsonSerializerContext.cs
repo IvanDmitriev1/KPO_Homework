@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace KPO_HW4.OrderService.OrdersFeature.Models;
+namespace KPO_HW4.OrderService.Infrastructure.JsonSerializationContexts;
 
 [JsonSourceGenerationOptions(
     WriteIndented = true,

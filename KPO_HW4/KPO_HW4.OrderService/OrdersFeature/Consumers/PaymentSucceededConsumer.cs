@@ -17,7 +17,9 @@ public sealed class PaymentSucceededConsumer(OrdersDbContext db, IOrderPushNotif
 
         order.MarkFinished();
         await db.SaveChangesAsync(context.CancellationToken);
+
         await pushNotifier.StatusChanged(
-            new OrderStatusChangedPush(order.Id, order.UserId, order.Status), context.CancellationToken);
+            new OrderStatusChangedPush(order.Id, order.UserId, order.Status),
+            context.CancellationToken);
     }
 }

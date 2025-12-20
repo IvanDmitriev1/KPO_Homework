@@ -28,4 +28,9 @@
     <ProjectReference Include="..\KPO_HW4.Shared.Contracts\KPO_HW4.Shared.Contracts.csproj" />
   </ItemGroup>
 
+
+	<ItemGroup>
+	  <Folder Include="OrdersFeature\Models\" />
+	</ItemGroup>
+
 </Project>

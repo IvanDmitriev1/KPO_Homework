@@ -1,11 +1,4 @@
-﻿namespace KPO_HW4.OrderService.Data.Entities;
-
-public enum OrderStatus : short
-{
-    New = 0,
-    Finished = 1,
-    Cancelled = 2
-}
+namespace KPO_HW4.OrderService.Data.Entities;
 
 public sealed class Order
 {

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace KPO_HW4.PaymentsService.AccountsFeature.Models;
+namespace KPO_HW4.Ui.Infrastructure.JsonSerializationContexts;
 
 [JsonSourceGenerationOptions(
     WriteIndented = true,

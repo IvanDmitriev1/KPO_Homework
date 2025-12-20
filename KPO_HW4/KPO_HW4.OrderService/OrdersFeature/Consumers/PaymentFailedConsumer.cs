@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KPO_HW4.OrderService.OrdersFeature.Consumers;
 
-public sealed class PaymentFailedConsumer(OrdersDbContext db) : IConsumer<PaymentFailed>
+public sealed class PaymentFailedConsumer(OrdersDbContext db, IOrderPushNotifier notifier) : IConsumer<PaymentFailed>
 {
     public async Task Consume(ConsumeContext<PaymentFailed> context)
     {
@@ -17,5 +17,9 @@ public sealed class PaymentFailedConsumer(OrdersDbContext db) : IConsumer<Paymen
 
         order.MarkCancelled();
         await db.SaveChangesAsync(context.CancellationToken);
+
+        await notifier.StatusChanged(
+            new OrderStatusChangedPush(order.Id, order.UserId, order.Status),
+            context.CancellationToken);
     }
 }

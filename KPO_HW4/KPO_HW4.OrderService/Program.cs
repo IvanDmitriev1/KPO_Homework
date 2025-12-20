@@ -9,12 +9,13 @@ builder.AddInfrastructure();
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
 
-builder.Services.AddSignalR(options =>
-{
-    
-});
-
+builder.Services.AddSignalR();
 builder.Services.AddScoped<IOrderPushNotifier, SignalROrderPushNotifier>();
+
+builder.Services.AddCors(o => o.AddPolicy("frontend", p =>
+    p.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin()));
 
 var app = builder.Build();
 app.MapDefaultEndpoints();
@@ -29,6 +30,8 @@ if (app.Environment.IsDevelopment())
         options.WithDynamicBaseServerUrl();
     });
 }
+
+app.UseCors("frontend");
 
 app.MapOrdersEndpoints();
 
