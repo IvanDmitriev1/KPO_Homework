@@ -7,9 +7,23 @@ services:
       - "18888:18888"
     expose:
       - "18889"
+      - "18890"
     networks:
       - "my-network"
     restart: "always"
+  redis:
+    image: "docker.io/library/redis:8.2"
+    command:
+      - "-c"
+      - "redis-server --requirepass $$REDIS_PASSWORD"
+    entrypoint:
+      - "/bin/sh"
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    expose:
+      - "6379"
+    networks:
+      - "my-network"
   messaging:
     image: "docker.io/library/rabbitmq:4.2-management"
     environment:
@@ -56,13 +70,13 @@ services:
       MESSAGING_PASSWORD: "${MESSAGING_PASSWORD}"
       MESSAGING_URI: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
       ConnectionStrings__payments-db: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=payments-db"
-      PAYMENTS-DB_HOST: "postgres"
-      PAYMENTS-DB_PORT: "5432"
-      PAYMENTS-DB_USERNAME: "postgres"
-      PAYMENTS-DB_PASSWORD: "${POSTGRES_PASSWORD}"
-      PAYMENTS-DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/payments-db"
-      PAYMENTS-DB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/payments-db"
-      PAYMENTS-DB_DATABASE: "payments-db"
+      PAYMENTS_DB_HOST: "postgres"
+      PAYMENTS_DB_PORT: "5432"
+      PAYMENTS_DB_USERNAME: "postgres"
+      PAYMENTS_DB_PASSWORD: "${POSTGRES_PASSWORD}"
+      PAYMENTS_DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/payments-db"
+      PAYMENTS_DB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/payments-db"
+      PAYMENTS_DB_DATABASENAME: "payments-db"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "paymentsService"
@@ -90,13 +104,18 @@ services:
       MESSAGING_PASSWORD: "${MESSAGING_PASSWORD}"
       MESSAGING_URI: "amqp://guest:${MESSAGING_PASSWORD}@messaging:5672"
       ConnectionStrings__orders-db: "Host=postgres;Port=5432;Username=postgres;Password=${POSTGRES_PASSWORD};Database=orders-db"
-      ORDERS-DB_HOST: "postgres"
-      ORDERS-DB_PORT: "5432"
-      ORDERS-DB_USERNAME: "postgres"
-      ORDERS-DB_PASSWORD: "${POSTGRES_PASSWORD}"
-      ORDERS-DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/orders-db"
-      ORDERS-DB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/orders-db"
-      ORDERS-DB_DATABASE: "orders-db"
+      ORDERS_DB_HOST: "postgres"
+      ORDERS_DB_PORT: "5432"
+      ORDERS_DB_USERNAME: "postgres"
+      ORDERS_DB_PASSWORD: "${POSTGRES_PASSWORD}"
+      ORDERS_DB_URI: "postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/orders-db"
+      ORDERS_DB_JDBCCONNECTIONSTRING: "jdbc:postgresql://postgres:5432/orders-db"
+      ORDERS_DB_DATABASENAME: "orders-db"
+      ConnectionStrings__redis: "redis:6379,password=${REDIS_PASSWORD}"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+      REDIS_URI: "redis://:${REDIS_PASSWORD}@redis:6379"
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://docker-dashboard:18889"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_SERVICE_NAME: "orderService"
@@ -106,6 +125,8 @@ services:
       postgres:
         condition: "service_started"
       messaging:
+        condition: "service_started"
+      redis:
         condition: "service_started"
     networks:
       - "my-network"
@@ -141,7 +162,7 @@ services:
       REVERSEPROXY__ROUTES__route0__MATCH__PATH: "/api/orders/{**catch-all}"
       REVERSEPROXY__ROUTES__route0__CLUSTERID: "cluster_orderService"
       REVERSEPROXY__ROUTES__route0__TRANSFORMS__0__PathRemovePrefix: "/api"
-      REVERSEPROXY__ROUTES__route1__MATCH__PATH: "/api/payments/{**catch-all}"
+      REVERSEPROXY__ROUTES__route1__MATCH__PATH: "/api/accounts/{**catch-all}"
       REVERSEPROXY__ROUTES__route1__CLUSTERID: "cluster_paymentsService"
       REVERSEPROXY__ROUTES__route1__TRANSFORMS__0__PathRemovePrefix: "/api"
       REVERSEPROXY__ROUTES__route2__MATCH__PATH: "/{**catch-all}"

@@ -70,7 +70,7 @@ public sealed class OrdersRealtimeClient : IOrdersRealtimeClient
 
     private HubConnection BuildHub(UserId userId)
     {
-        var hubUrl = new Uri(_baseAddress, $"hub/orderNotifications/{userId.Value:D}");
+        var hubUrl = new Uri(_baseAddress, $"/api/orders/hub/orderNotifications/{userId.Value:D}");
         return new HubConnectionBuilder()
             .WithUrl(hubUrl)
             .WithAutomaticReconnect()

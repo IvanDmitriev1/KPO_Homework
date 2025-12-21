@@ -1,5 +1,6 @@
 using KPO_HW4.Ui.Infrastructure.JsonSerializationContexts;
 using KPO_HW4.Ui.Infrastructure.Orders;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http.Json;
 
 namespace KPO_HW4.Ui.Infrastructure;
@@ -13,11 +14,11 @@ public static class ServicesExtensions
             client.BaseAddress = new Uri("https+http://gateway/api/orders/");
         });
 
-        var gatewayUrl = builder.Configuration["GATEWAY_HTTP"] ?? throw new InvalidOperationException("Gateway URL is not configured");
-        var baseGatewayUrl = new Uri($"{gatewayUrl}/api/orders/");
-
         builder.Services.AddScoped<IOrdersRealtimeClient, OrdersRealtimeClient>(sp =>
-            new OrdersRealtimeClient(baseGatewayUrl));
+        {
+            var baseUri = sp.GetRequiredService<NavigationManager>().BaseUri;
+            return new OrdersRealtimeClient(new Uri(baseUri));
+        });
 
         builder.Services.Configure<JsonOptions>(options =>
         {

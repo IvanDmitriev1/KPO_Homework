@@ -65,7 +65,8 @@
 		try
 		{
 			_isBusy = true;
-			var response = await OrdersApi.CreateAsync(new CreateOrderRequest(_model.UserId, _model.Amount * 100, _model.Description));
+			var amountMinor = decimal.ToInt64(decimal.Round(_model.Amount * 100m, 0, MidpointRounding.AwayFromZero));
+			var response = await OrdersApi.CreateAsync(new CreateOrderRequest(_model.UserId, amountMinor, _model.Description));
 			NavigationManager.NavigateTo("/orders");
 		}
 		catch (Exception e)
@@ -83,7 +84,7 @@
 		public UserId UserId { get; set; }
 
 		[Range(1, 100000000)]
-		public long Amount{ get; set; }
+		public decimal Amount{ get; set; }
 
 		[Required, MinLength(1)]
 		public string Description { get; set; } = string.Empty;

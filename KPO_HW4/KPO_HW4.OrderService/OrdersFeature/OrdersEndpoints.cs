@@ -15,8 +15,7 @@ public static class OrdersEndpoints
             .WithTags("Orders");
 
         group.MapPost("/create", CreateOrderHandler)
-            .WithDescription("Create order")
-            .DisableAntiforgery();
+            .WithDescription("Create order");
 
         group.MapGet("/list/{userId}", ListOrdersHandler)
             .WithDescription("List orders");

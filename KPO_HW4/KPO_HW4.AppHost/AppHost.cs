@@ -13,6 +13,10 @@ var env = builder.AddDockerComposeEnvironment("docker")
         dashboard.WithForwardedHeaders();
     });
 
+
+var redis = builder.AddRedis("redis")
+    .WithRedisInsight();
+
 var rabbitmq = builder
     .AddRabbitMQ("messaging")
     .WithManagementPlugin()
@@ -39,8 +43,11 @@ var paymentsService = builder
 var ordersService = builder.AddProject<Projects.KPO_HW4_OrderService>("orderService")
     .WithReference(rabbitmq)
     .WithReference(ordersDb)
+    .WithReference(redis)
     .WaitFor(ordersDb)
     .WaitFor(rabbitmq)
+    .WaitFor(redis)
+    .WithReplicas(2)
     .PublishAsDockerComposeService((resource, service) => { });
 
 var ui = builder.AddProject<Projects.KPO_HW4_Ui>("ui")

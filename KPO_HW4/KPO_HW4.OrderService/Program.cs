@@ -9,7 +9,10 @@ builder.AddInfrastructure();
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddStackExchangeRedis(builder.Configuration.GetConnectionString("redis") ??
+                           throw new InvalidOperationException("Missing redis connection string"));
+
 builder.Services.AddScoped<IOrderPushNotifier, SignalROrderPushNotifier>();
 
 builder.Services.AddCors(o => o.AddPolicy("frontend", p =>
