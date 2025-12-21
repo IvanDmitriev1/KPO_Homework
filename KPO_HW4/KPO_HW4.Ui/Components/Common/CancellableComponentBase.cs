@@ -18,6 +18,7 @@ public abstract class CancellableComponentBase : ComponentBase, IDisposable
     {
         if (disposing)
         {
+            _cts.Cancel();
             _cts.Dispose();
         }
     }

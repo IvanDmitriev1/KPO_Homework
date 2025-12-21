@@ -1,26 +1,26 @@
-<div class="rounded-xl border border-gray-200 bg-white shadow-sm p-4 flex items-center justify-between gap-4">
-	<div class="flex items-center gap-4 min-w-0">
-		<div class="text-xl font-semibold text-gray-900 shrink-0">
-			@Order.OrderId
+<LumexCard Class="flex flex-row gap-4 items-center p-4">
+	<div class="flex flex-col gap-1">
+		<div class="flex gap-1 text-gray-900">
+			<span>Id:</span>
+			<span>@Order.OrderId</span>
+		</div>
+		
+		<div class="flex gap-1">
+			<span class="text-gray-700">Amount:</span>
+			<span class="font-semibold">@Order.Amount.ToString("F1")</span>
 		</div>
 
-		<div class="min-w-0">
-			<div class="text-gray-900 font-medium truncate">@Order.Description</div>
-			<div class="text-sm text-gray-500">
-				Created: @Order.CreatedAt.ToLocalTime().ToString("g")
-			</div>
+		<div class="flex gap-1 text-gray-500">
+			<span>Created:</span>
+			<span>@Order.CreatedAt.ToLocalTime().ToString("g")</span>
 		</div>
 	</div>
+	
+	<div class="grow text-gray-900 font-medium truncate">@Order.Description</div>
+	
+	<OrderStatusBadge Status="Order.Status" />
+</LumexCard>
 
-	<div class="flex items-center gap-4 shrink-0">
-		<div class="text-gray-700">
-			<span class="text-sm text-gray-500">Amount:</span>
-			<span class="font-semibold">@Order.Amount</span>
-		</div>
-
-		<OrderStatusBadge Status="Order.Status" />
-	</div>
-</div>
 
 @code {
 	[Parameter, EditorRequired]

@@ -22,11 +22,6 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\css\" />
-  </ItemGroup>
-
-
 	<PropertyGroup>
 		<TailwindInput>wwwroot/globals.css</TailwindInput>
 		<TailwindOutput>wwwroot/css/app.css</TailwindOutput>

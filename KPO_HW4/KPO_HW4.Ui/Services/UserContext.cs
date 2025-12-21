@@ -7,25 +7,23 @@ public class UserContext(ILocalStorageService localStorageService) : IUserContex
     private const string StorageKey = "userId";
     private readonly SemaphoreSlim _lock = new(1, 1);
 
-    private UserId? _cached;
+    public UserId UserId { get; private set; } = UserId.Empty;
 
-    public async ValueTask<UserId> GetUserIdAsync(CancellationToken ct)
+    public async Task Initialize(CancellationToken ct)
     {
-        if (_cached is not null)
-            return _cached.Value;
+        if (UserId != UserId.Empty)
+            return;
 
         await _lock.WaitAsync(ct);
 
         try
         {
-            _cached = await localStorageService.GetItemAsync<UserId>(StorageKey, ct);
-            if (_cached.Value == UserId.Empty)
+            UserId = await localStorageService.GetItemAsync<UserId>(StorageKey, ct);
+            if (UserId == UserId.Empty)
             {
-                _cached = UserId.New();
-                await localStorageService.SetItemAsync(StorageKey, _cached.Value, ct);
+                UserId = UserId.New();
+                await localStorageService.SetItemAsync(StorageKey, UserId, ct);
             }
-            
-            return _cached.Value;
         }
         finally
         {

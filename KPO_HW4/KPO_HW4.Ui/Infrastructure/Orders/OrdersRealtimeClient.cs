@@ -9,24 +9,35 @@ public sealed class OrdersRealtimeClient : IOrdersRealtimeClient
         _baseAddress = baseAddress;
     }
 
+    private readonly SemaphoreSlim _lock = new(1, 1);
     private readonly Uri _baseAddress;
     private HubConnection? _hub;
+    private Task? _connectTask;
 
     public async ValueTask DisposeAsync() => await DisconnectAsync();
 
     public async Task ConnectAsync(UserId userId, CancellationToken ct = default)
     {
-        if (_hub?.State is HubConnectionState.Connected or HubConnectionState.Connecting)
-            return;
+        Task task;
 
-        var hubUrl = new Uri(_baseAddress, $"hub/orderNotifications/{userId.Value:D}");
+        await _lock.WaitAsync(ct);
+        try
+        {
+            if (_hub?.State == HubConnectionState.Connected)
+                return;
 
-        _hub = new HubConnectionBuilder()
-            .WithUrl(hubUrl)
-            .WithAutomaticReconnect()
-            .Build();
+            _hub ??= BuildHub(userId);
 
-        await _hub.StartAsync(ct);
+            task = _connectTask is { IsCompleted: false }
+                ? _connectTask
+                : _connectTask = _hub.StartAsync(ct);
+        }
+        finally
+        {
+            _lock.Release();
+        }
+
+        await task;
     }
 
     public async Task DisconnectAsync(CancellationToken ct = default)
@@ -45,11 +56,25 @@ public sealed class OrdersRealtimeClient : IOrdersRealtimeClient
         }
     }
 
+    public IDisposable SubscribeToOrderStatusChange(Func<OrderStatusChangedPush, Task> handler)
+    {
+        EnsureConnected();
+        return _hub!.On(OrderStatusChangedPush.Name, handler);
+    }
+
     public IDisposable SubscribeToOrderStatusChange(Action<OrderStatusChangedPush> handler)
     {
         EnsureConnected();
-
         return _hub!.On(OrderStatusChangedPush.Name, handler);
+    }
+
+    private HubConnection BuildHub(UserId userId)
+    {
+        var hubUrl = new Uri(_baseAddress, $"hub/orderNotifications/{userId.Value:D}");
+        return new HubConnectionBuilder()
+            .WithUrl(hubUrl)
+            .WithAutomaticReconnect()
+            .Build();
     }
 
     private void EnsureConnected()

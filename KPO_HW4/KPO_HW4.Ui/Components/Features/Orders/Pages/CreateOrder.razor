@@ -1,2 +1,91 @@
 @page "/create-order"
+@rendermode InteractiveServer
+@inject IUserContext UserContext
+@inject IOrdersApiClient OrdersApi
+@inject NavigationManager NavigationManager
 
+<div class="max-w-3xl mx-auto px-4 py-10">
+	<h1 class="text-3xl font-semibold text-center text-slate-900 mb-8">Create New Order</h1>
+	
+	<LumexCard Class="p-10">
+		<EditForm Model="_model" OnValidSubmit="SubmitAsync">
+			<DataAnnotationsValidator />
+			
+			<div class="space-y-6">
+				<ValidationSummary class="text-red-500" />
+
+				<LumexNumbox @bind-Value="_model.Amount"
+				             Label="Amount"
+				             Required="true"
+				             Placeholder="Enter the price"
+				             Variant="InputVariant.Outlined"/>
+
+				<LumexTextbox @bind-Value="_model.Description"
+				              Label="Descriptioon"
+				              Placeholder="Enter description"
+				              Variant="InputVariant.Outlined"/>
+
+				<div class="flex items-center gap-3 pt-2">
+					<LumexButton Type="ButtonType.Submit"
+					             Color="ThemeColor.Primary"
+					             Disabled="@_isBusy"
+								 Class="justify-self-end">
+						@if (_isBusy)
+						{
+							<span class="animate-pulse">Creating...</span>
+						}
+						else
+						{
+							<span>Create Order</span>
+						}
+					</LumexButton>
+				</div>
+			</div>
+		</EditForm>
+	</LumexCard>
+</div>
+
+
+@code
+{
+	private readonly CreateOrderFormModel _model = new();
+	private bool _isBusy = false;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (!firstRender)
+			return;
+
+		await UserContext.Initialize(CancellationToken.None);
+		_model.UserId = UserContext.UserId;
+	}
+
+	private async Task SubmitAsync()
+	{
+		try
+		{
+			_isBusy = true;
+			var response = await OrdersApi.CreateAsync(new CreateOrderRequest(_model.UserId, _model.Amount * 100, _model.Description));
+			NavigationManager.NavigateTo("/orders");
+		}
+		catch (Exception e)
+		{
+			//
+		}
+		finally
+		{
+			_isBusy = false;
+		}
+	}
+
+	private sealed class CreateOrderFormModel
+	{
+		public UserId UserId { get; set; }
+
+		[Range(1, 100000000)]
+		public long Amount{ get; set; }
+
+		[Required, MinLength(1)]
+		public string Description { get; set; } = string.Empty;
+	}
+}

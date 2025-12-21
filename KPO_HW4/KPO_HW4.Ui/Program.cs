@@ -36,4 +36,7 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+
+app.MapGet("/", () => TypedResults.Redirect("/create-order", true));
+
 app.Run();

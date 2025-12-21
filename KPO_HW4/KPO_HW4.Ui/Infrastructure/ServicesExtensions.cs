@@ -10,7 +10,7 @@ public static class ServicesExtensions
     {
         builder.Services.AddHttpClient<IOrdersApiClient, OrdersApiClient>(client =>
         {
-            client.BaseAddress = new Uri("https+http://gateway/api/orders");
+            client.BaseAddress = new Uri("https+http://gateway/api/orders/");
         });
 
         var gatewayUrl = builder.Configuration["GATEWAY_HTTP"] ?? throw new InvalidOperationException("Gateway URL is not configured");

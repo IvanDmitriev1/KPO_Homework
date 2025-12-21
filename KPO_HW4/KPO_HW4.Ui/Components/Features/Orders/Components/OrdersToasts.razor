@@ -23,8 +23,8 @@
 		if (!firstRender)
 			return;
 
-		var userId = await UserContext.GetUserIdAsync(CancellationToken);
-		await OrdersRealtimeClient.ConnectAsync(userId, CancellationToken);
+		await UserContext.Initialize(CancellationToken);
+		await OrdersRealtimeClient.ConnectAsync(UserContext.UserId, CancellationToken);
 
 		_subscription = OrdersRealtimeClient.SubscribeToOrderStatusChange(Handler);
 	}
@@ -41,7 +41,7 @@
 
 		ToastService.ShowToast(level, $"Order {args.OrderId} changed status to {args.Status}", settings =>
 		{
-			settings.Timeout = 60;
+			settings.Timeout = 120;
 		});
 	}
 

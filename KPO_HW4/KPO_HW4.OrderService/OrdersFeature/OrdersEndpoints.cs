@@ -4,7 +4,6 @@ using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace KPO_HW4.OrderService.OrdersFeature;
 
@@ -32,7 +31,7 @@ public static class OrdersEndpoints
     }
 
     private static async Task<Created<CreateOrderResponse>> CreateOrderHandler(
-        [FromForm] CreateOrderRequest req,
+        [FromBody] CreateOrderRequest req,
         [FromServices] OrdersDbContext db,
         [FromServices] IPublishEndpoint publish,
         [FromServices] IOrderPushNotifier notifier,
