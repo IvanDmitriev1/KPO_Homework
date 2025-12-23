@@ -14,4 +14,4 @@ namespace KPO_HW4.OrderService.Infrastructure.JsonSerializationContexts;
 [JsonSerializable(typeof(PaymentRequested))]
 [JsonSerializable(typeof(PaymentSucceeded))]
 [JsonSerializable(typeof(PaymentFailed))]
-public partial class ContractsJsonSerializerContext : JsonSerializerContext { }
+public partial class PaymentsJsonSerializerContext : JsonSerializerContext { }

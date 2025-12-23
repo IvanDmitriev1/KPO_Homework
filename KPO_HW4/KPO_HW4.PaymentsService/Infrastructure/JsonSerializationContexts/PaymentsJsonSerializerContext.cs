@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using KPO_HW4.Shared.Contracts.Messaging;
 
 namespace KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;
 
@@ -15,4 +14,4 @@ namespace KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;
 [JsonSerializable(typeof(PaymentRequested))]
 [JsonSerializable(typeof(PaymentSucceeded))]
 [JsonSerializable(typeof(PaymentFailed))]
-public partial class ContractsJsonSerializerContext : JsonSerializerContext { }
+public partial class PaymentsJsonSerializerContext : JsonSerializerContext { }

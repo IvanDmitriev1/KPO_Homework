@@ -1,11 +1,10 @@
-using KPO_HW4.OrderService.Infrastructure.Extensions;
-using KPO_HW4.OrderService.OrdersFeature.SignalR;
+using KPO_HW4.OrderService.Application.SignalR;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KPO_HW4.OrderService.OrdersFeature;
+namespace KPO_HW4.OrderService.Application;
 
 public static class OrdersEndpoints
 {
@@ -20,7 +19,7 @@ public static class OrdersEndpoints
         group.MapGet("/list/{userId}", ListOrdersHandler)
             .WithDescription("List orders");
 
-        group.MapGet("/{orderId}", GetOrderStatus)
+        group.MapGet("/{orderId}", GetOrderStatusHandler)
             .WithDescription("Get order status");
 
 
@@ -74,7 +73,7 @@ public static class OrdersEndpoints
         return TypedResults.Ok(list);
     }
 
-    private static async Task<Results<Ok<OrderDto>, NotFound>> GetOrderStatus(
+    private static async Task<Results<Ok<OrderDto>, NotFound>> GetOrderStatusHandler(
         [FromRoute] OrderId orderId,
         [FromServices] OrdersDbContext db,
         CancellationToken ct)

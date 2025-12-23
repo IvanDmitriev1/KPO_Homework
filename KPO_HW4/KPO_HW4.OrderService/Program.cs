@@ -1,12 +1,12 @@
+using KPO_HW4.OrderService.Application;
+using KPO_HW4.OrderService.Application.SignalR;
 using KPO_HW4.OrderService.Infrastructure;
-using KPO_HW4.OrderService.OrdersFeature;
-using KPO_HW4.OrderService.OrdersFeature.SignalR;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddInfrastructure();
-
 builder.AddServiceDefaults();
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddSignalR()

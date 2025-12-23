@@ -1,5 +1,5 @@
 using EntityFramework.Exceptions.PostgreSQL;
-using KPO_HW4.PaymentsService.AccountsFeature.Consumers;
+using KPO_HW4.PaymentsService.Application.Consumers;
 using KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;
 using MassTransit;
 using Microsoft.AspNetCore.Http.Json;
@@ -20,7 +20,7 @@ public static class ServicesExtensions
         builder.Services.Configure<JsonOptions>(options =>
         {
             var chain = options.SerializerOptions.TypeInfoResolverChain;
-            chain.Add(ContractsJsonSerializerContext.Default);
+            chain.Add(PaymentsJsonSerializerContext.Default);
             chain.Add(AccountsDtosSerializationContext.Default);
         });
     }

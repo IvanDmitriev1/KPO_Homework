@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KPO_HW4.OrderService.Data;
 
-
 public sealed class OrdersDbContext(DbContextOptions<OrdersDbContext> options) : DbContext(options)
 {
     public DbSet<Order> Orders => Set<Order>();

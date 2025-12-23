@@ -1,11 +1,11 @@
-using KPO_HW4.PaymentsService.AccountsFeature;
+using KPO_HW4.PaymentsService.Application;
 using KPO_HW4.PaymentsService.Infrastructure;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddInfrastructure();
-
 builder.AddServiceDefaults();
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

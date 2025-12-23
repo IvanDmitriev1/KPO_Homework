@@ -8,7 +8,7 @@
 
 		<TailwindVersion Condition="'$(TailwindVersion)' == ''">v4.1.11</TailwindVersion>
 		<TailwindInput Condition="'$(TailwindInput)' == ''">Styles/globals.css</TailwindInput>
-		<TailwindOutput Condition="'$(TailwindOutput)' == ''">wwwroot/css/docs.css</TailwindOutput>
+		<TailwindOutput Condition="'$(TailwindOutput)' == ''">wwwroot/css/app.css</TailwindOutput>
 	</PropertyGroup>
 
 	<PropertyGroup>

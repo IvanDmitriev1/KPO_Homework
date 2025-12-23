@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace KPO_HW4.PaymentsService.AccountsFeature;
+namespace KPO_HW4.PaymentsService.Application;
 
 public static class AccountsEndpoints
 {

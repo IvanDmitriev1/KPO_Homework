@@ -55,6 +55,7 @@ var ui = builder.AddProject<Projects.KPO_HW4_Ui>("ui")
 
 var gateway = builder.AddYarp("gateway")
     .WithHostPort(8080)
+    .WithHostHttpsPort(8433)
     .WithConfiguration(yarp =>
     {
         yarp.AddRoute("/api/orders/{**catch-all}", ordersService)

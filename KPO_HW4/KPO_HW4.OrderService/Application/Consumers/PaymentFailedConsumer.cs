@@ -1,7 +1,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace KPO_HW4.OrderService.OrdersFeature.Consumers;
+namespace KPO_HW4.OrderService.Application.Consumers;
 
 public sealed class PaymentFailedConsumer(OrdersDbContext db, IOrderPushNotifier notifier) : IConsumer<PaymentFailed>
 {

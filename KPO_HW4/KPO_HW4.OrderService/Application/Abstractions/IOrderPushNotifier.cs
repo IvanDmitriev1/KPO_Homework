@@ -1,4 +1,4 @@
-namespace KPO_HW4.OrderService.OrdersFeature.Abstractions;
+namespace KPO_HW4.OrderService.Application.Abstractions;
 
 public interface IOrderPushNotifier
 {

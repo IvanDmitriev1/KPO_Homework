@@ -1,4 +1,4 @@
-namespace KPO_HW4.Shared.Contracts.Common;
+namespace KPO_HW4.Shared.Contracts.Account;
 
 public enum PaymentFailureCode : short
 {

@@ -1,7 +1,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace KPO_HW4.OrderService.OrdersFeature.Consumers;
+namespace KPO_HW4.OrderService.Application.Consumers;
 
 public sealed class PaymentSucceededConsumer(OrdersDbContext db, IOrderPushNotifier pushNotifier) : IConsumer<PaymentSucceeded>
 {

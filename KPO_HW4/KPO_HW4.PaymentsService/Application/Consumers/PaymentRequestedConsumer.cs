@@ -1,9 +1,8 @@
 using KPO_HW4.PaymentsService.Data.Entities;
-using KPO_HW4.Shared.Contracts.Messaging;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
-namespace KPO_HW4.PaymentsService.AccountsFeature.Consumers;
+namespace KPO_HW4.PaymentsService.Application.Consumers;
 
 public class PaymentRequestedConsumer(PaymentsDbContext db) : IConsumer<PaymentRequested>
 {

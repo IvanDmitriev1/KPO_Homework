@@ -14,11 +14,11 @@ public static class ServicesExtensions
             client.BaseAddress = new Uri("https+http://gateway/api/orders/");
         });
 
+        var baseUri = new Uri(builder.Configuration["GATEWAY_HTTPS"] ??
+                              throw new InvalidOperationException("'GATEWAY_HTTPS' not configured"));
+
         builder.Services.AddScoped<IOrdersRealtimeClient, OrdersRealtimeClient>(sp =>
-        {
-            var baseUri = sp.GetRequiredService<NavigationManager>().BaseUri;
-            return new OrdersRealtimeClient(new Uri(baseUri));
-        });
+            new OrdersRealtimeClient(baseUri));
 
         builder.Services.Configure<JsonOptions>(options =>
         {
