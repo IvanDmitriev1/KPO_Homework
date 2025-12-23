@@ -39,7 +39,7 @@ public static class ServicesExtensions
             o.UseBusOutbox();
 
             o.DuplicateDetectionWindow = TimeSpan.FromMinutes(30);
-            o.QueryDelay = TimeSpan.FromSeconds(1);
+            o.QueryDelay = TimeSpan.FromSeconds(3);
         });
 
         c.AddConfigureEndpointsCallback((context, name, endpointCfg) =>
