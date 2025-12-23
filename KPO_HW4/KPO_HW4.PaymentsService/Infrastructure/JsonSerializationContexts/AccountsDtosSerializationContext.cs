@@ -12,6 +12,7 @@ namespace KPO_HW4.PaymentsService.Infrastructure.JsonSerializationContexts;
         typeof(OrderId.OrderIdSystemTextJsonConverter),
         typeof(PaymentTransactionId.PaymentTransactionIdSystemTextJsonConverter)])]
 [JsonSerializable(typeof(CreateAccountResponse))]
-[JsonSerializable(typeof(TopUpRequest))]
-[JsonSerializable(typeof(BalanceResponse))]
+[JsonSerializable(typeof(TopUpAccountRequest))]
+[JsonSerializable(typeof(AccountBalanceResponse))]
+[JsonSerializable(typeof(PaymentTransactionDto))]
 public partial class AccountsDtosSerializationContext : JsonSerializerContext { }

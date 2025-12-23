@@ -5,8 +5,7 @@ namespace KPO_HW4.Shared.Contracts.Account;
 
 public sealed record CreateAccountResponse(AccountId AccountId, UserId UserId);
 
-public sealed record TopUpRequest(
+public sealed record TopUpAccountRequest(
     [property: Required] UserId UserId,
     [property: Range(1, 100000000)] long AmountMinor);
-
-public sealed record BalanceResponse(UserId UserId, double Balance);
+public sealed record AccountBalanceResponse(UserId UserId, decimal Balance);

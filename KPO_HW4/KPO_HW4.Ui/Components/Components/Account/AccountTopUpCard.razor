@@ -1,0 +1,53 @@
+<LumexCard Class="p-4">
+	<EditForm Model="_model" OnValidSubmit="SubmitAsync">
+		<DataAnnotationsValidator />
+			
+		<div class="flex flex-col gap-1">
+			<ValidationSummary class="text-red-500" />
+
+			<LumexNumbox @bind-Value="_model.Amount"
+			             Label="Amount"
+			             Required="true"
+			             Placeholder="Enter the price"
+			             Variant="InputVariant.Outlined"/>
+
+			<LumexButton Type="ButtonType.Submit"
+			             Color="ThemeColor.Primary"
+						 Disabled="@_isBusy"
+			             Class="justify-self-end">
+				@if (_isBusy)
+				{
+					<span class="animate-pulse">Creating...</span>
+				}
+				else
+				{
+					<span>Create Order</span>
+				}
+			</LumexButton>
+		</div>
+	</EditForm>
+</LumexCard>
+
+
+@code
+{
+	private sealed class TopUpModel
+	{
+		[Range(1, 100000000)]
+		public decimal Amount { get; set; } = 1;
+	}
+
+	[Parameter, EditorRequired]
+	public EventCallback<decimal> OnTopUp { get; set; }
+
+	private bool _isBusy;
+	TopUpModel _model = new();
+
+	private async Task SubmitAsync(EditContext arg)
+	{
+		_isBusy = true;
+		await OnTopUp.InvokeAsync(_model.Amount);
+		_isBusy = false;
+		_model = new TopUpModel();
+	}
+}

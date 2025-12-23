@@ -4,5 +4,5 @@ public interface IUserContext
 {
     UserId UserId { get; }
 
-    Task Initialize(CancellationToken ct);
+    ValueTask Initialize(CancellationToken ct);
 }

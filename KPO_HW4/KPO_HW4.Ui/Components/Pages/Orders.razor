@@ -3,15 +3,22 @@
 @inherits CancellableComponentBase
 @inject IUserContext UserContext
 @inject IOrdersRealtimeClient OrdersRealtimeClient
-@inject IOrdersApiClient OrdersApiClient
+@inject IOrdersApiClient OrdersApi
 
 <div class="max-w-4xl mx-auto px-4 py-10 space-y-6">
 	<h1 class="text-3xl font-semibold text-center text-slate-900 mb-8">Orders</h1>
-	<LumexDivider/>
 	
+	<LabelDivider Label="Create order"/>
+	<CreateOrderCard OnOrder="HandleOrderCreation" />
+	
+	<LabelDivider Label="Orders" />
 	@if (_isBusy)
 	{
 		<span class="text-center">Loading...</span>
+	}
+	else if (_orders.Count == 0)
+	{
+		<span class="text-center">No orders found</span>
 	}
 	else
 	{
@@ -58,7 +65,7 @@
 		await OrdersRealtimeClient.ConnectAsync(UserContext.UserId);
 		_subscription = OrdersRealtimeClient.SubscribeToOrderStatusChange(OrderStatusChangedHandler);
 
-		var orders = await OrdersApiClient.ListByUserAsync(UserContext.UserId, CancellationToken);
+		var orders = await OrdersApi.ListByUserAsync(UserContext.UserId, CancellationToken);
 		_orders.AddRange(orders);
 
 		_isBusy = false;
@@ -70,10 +77,10 @@
 		var idx = _orders.FindIndex(x => x.OrderId == args.OrderId);
 		if (idx < 0)
 		{
-			if (await OrdersApiClient.GetAsync(args.OrderId) is not { } order)
+			if (await OrdersApi.GetAsync(args.OrderId) is not { } order)
 				return;
 
-			_orders.Add(order);
+			_orders.Insert(0, order);
 		}
 		else
 		{
@@ -87,4 +94,14 @@
 		
 		await InvokeAsync(StateHasChanged);
 	}
+
+	private async Task HandleOrderCreation(CreateOrderCard.CreateOrderFormModel model)
+	{
+		if (UserContext.UserId == UserId.Empty)
+			return;
+
+		var amountMinor = decimal.ToInt64(decimal.Round(model.Amount * 100m, 0, MidpointRounding.AwayFromZero));
+		var response = await OrdersApi.CreateAsync(new CreateOrderRequest(UserContext.UserId, amountMinor, model.Description));
+	}
+
 }

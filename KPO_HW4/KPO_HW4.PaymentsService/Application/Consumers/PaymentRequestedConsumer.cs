@@ -32,7 +32,7 @@ public class PaymentRequestedConsumer(PaymentsDbContext db) : IConsumer<PaymentR
         var existing = await db.Transactions
             .Where(t => t.Type == PaymentTransactionType.Debit
                         && t.ReferenceId == msg.OrderId.Value)
-            .SingleOrDefaultAsync(context.CancellationToken);
+            .FirstOrDefaultAsync(context.CancellationToken);
 
         if (existing is not null && existing.Status != PaymentTransactionStatus.Processing)
         {

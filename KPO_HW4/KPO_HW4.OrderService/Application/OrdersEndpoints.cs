@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using KPO_HW4.OrderService.Application.SignalR;
 using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,7 +20,7 @@ public static class OrdersEndpoints
         group.MapGet("/list/{userId}", ListOrdersHandler)
             .WithDescription("List orders");
 
-        group.MapGet("/{orderId}", GetOrderStatusHandler)
+        group.MapGet("/status/{orderId}", GetOrderStatusHandler)
             .WithDescription("Get order status");
 
 
@@ -59,18 +60,22 @@ public static class OrdersEndpoints
             new CreateOrderResponse(order.Id, order.Status));
     }
 
-    private static async Task<Ok<List<OrderDto>>> ListOrdersHandler(
+    private static async IAsyncEnumerable<OrderDto> ListOrdersHandler(
         [FromRoute] UserId userId,
         [FromServices] OrdersDbContext db, 
-        CancellationToken ct)
+        [EnumeratorCancellation] CancellationToken ct)
     {
-        var list = await db.Orders.AsNoTracking()
+        var query = db.Orders.AsNoTracking()
             .Where(o => o.UserId == userId)
             .OrderByDescending(o => o.CreatedAt)
             .Select(OrderDtoExtensions.CreateDto)
-            .ToListAsync(ct);
+            .AsAsyncEnumerable()
+            .WithCancellation(ct);
 
-        return TypedResults.Ok(list);
+        await foreach (var order in query)
+        {
+            yield return order;
+        }
     }
 
     private static async Task<Results<Ok<OrderDto>, NotFound>> GetOrderStatusHandler(

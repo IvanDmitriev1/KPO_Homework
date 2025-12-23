@@ -1,9 +1,7 @@
-using EntityFramework.Exceptions.PostgreSQL;
 using KPO_HW4.PaymentsService.Data.Entities;
 using KPO_HW4.PaymentsService.Data.EntityConfigurations;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace KPO_HW4.PaymentsService.Data;
 

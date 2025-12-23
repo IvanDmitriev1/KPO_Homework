@@ -1,3 +1,4 @@
+using KPO_HW4.Ui.Infrastructure.Accounts;
 using KPO_HW4.Ui.Infrastructure.JsonSerializationContexts;
 using KPO_HW4.Ui.Infrastructure.Orders;
 using Microsoft.AspNetCore.Components;
@@ -14,8 +15,14 @@ public static class ServicesExtensions
             client.BaseAddress = new Uri("https+http://gateway/api/orders/");
         });
 
+        builder.Services.AddHttpClient<IAccountsApi, AccountsApi>(client =>
+        {
+            client.BaseAddress = new Uri("https+http://gateway/api/accounts/");
+        });
+
         var baseUri = new Uri(builder.Configuration["GATEWAY_HTTPS"] ??
-                              throw new InvalidOperationException("'GATEWAY_HTTPS' not configured"));
+                              builder.Configuration["GATEWAY_HTTP"] ??
+                              throw new InvalidOperationException("'GATEWAY_HTTP' not configured"));
 
         builder.Services.AddScoped<IOrdersRealtimeClient, OrdersRealtimeClient>(sp =>
             new OrdersRealtimeClient(baseUri));
@@ -23,7 +30,7 @@ public static class ServicesExtensions
         builder.Services.Configure<JsonOptions>(options =>
         {
             var chain = options.SerializerOptions.TypeInfoResolverChain;
-            chain.Add(AccountsDtosSerializationContext.Default);
+            chain.Add(AccountsSerializationContext.Default);
             chain.Add(OrdersJsonSerializerContext.Default);
         });
     }

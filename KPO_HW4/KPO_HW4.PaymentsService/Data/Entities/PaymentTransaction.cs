@@ -1,23 +1,11 @@
 namespace KPO_HW4.PaymentsService.Data.Entities;
 
-public enum PaymentTransactionType : short
-{
-    TopUp = 0,
-    Debit = 1
-}
-
-public enum PaymentTransactionStatus : short
-{
-    Processing = 0,
-    Succeeded = 1,
-    Failed = 2
-}
-
 public sealed class PaymentTransaction
 {
     public PaymentTransactionId Id { get; init; }
 
     public required AccountId AccountId { get; init; }
+
     /// <summary>
     /// Для Debit: OrderId
     /// Для TopUp: генерируем

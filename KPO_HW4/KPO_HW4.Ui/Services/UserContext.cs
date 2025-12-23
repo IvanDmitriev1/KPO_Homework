@@ -9,7 +9,7 @@ public class UserContext(ILocalStorageService localStorageService) : IUserContex
 
     public UserId UserId { get; private set; } = UserId.Empty;
 
-    public async Task Initialize(CancellationToken ct)
+    public async ValueTask Initialize(CancellationToken ct)
     {
         if (UserId != UserId.Empty)
             return;

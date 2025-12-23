@@ -13,6 +13,7 @@ namespace KPO_HW4.OrderService.Infrastructure.JsonSerializationContexts;
         typeof(PaymentTransactionId.PaymentTransactionIdSystemTextJsonConverter)])]
 [JsonSerializable(typeof(CreateOrderRequest))]
 [JsonSerializable(typeof(CreateOrderResponse))]
-[JsonSerializable(typeof(List<OrderDto>))]
 [JsonSerializable(typeof(OrderStatusChangedPush))]
+[JsonSerializable(typeof(OrderDto))]
+[JsonSerializable(typeof(List<OrderDto>))]
 public partial class OrdersJsonSerializerContext : JsonSerializerContext { }

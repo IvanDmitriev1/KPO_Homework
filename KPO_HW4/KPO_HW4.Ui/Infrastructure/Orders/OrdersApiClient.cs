@@ -11,9 +11,9 @@ public sealed class OrdersApiClient(HttpClient client) : IOrdersApiClient
         return (await resp.Content.ReadFromJsonAsync<CreateOrderResponse>(cancellationToken: ct))!;
     }
 
-    public async Task<IReadOnlyList<OrderDto>> ListByUserAsync(UserId userId, CancellationToken ct = default)
+    public async Task<List<OrderDto>> ListByUserAsync(UserId userId, CancellationToken ct = default)
     {
-        var url = $"list/{userId.Value:D}";
+        var url = $"list/{userId:D}";
 
         var list = await client.GetFromJsonAsync<List<OrderDto>>(url, ct);
         return list ?? [];
@@ -21,7 +21,7 @@ public sealed class OrdersApiClient(HttpClient client) : IOrdersApiClient
 
     public async Task<OrderDto?> GetAsync(OrderId orderId, CancellationToken ct = default)
     {
-        var url = $"status/{orderId.Value:D}";
+        var url = $"status/{orderId:D}";
 
         using var resp = await client.GetAsync(url, ct);
         if (resp.StatusCode == HttpStatusCode.NotFound)

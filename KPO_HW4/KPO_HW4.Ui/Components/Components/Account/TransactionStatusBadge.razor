@@ -1,0 +1,23 @@
+<span class="@Css">
+	@Text
+</span>
+
+@code {
+	[Parameter] public PaymentTransactionStatus Status { get; set; } 
+
+	private string Text => Status switch
+	{
+		PaymentTransactionStatus.Processing => "Processing",
+		PaymentTransactionStatus.Succeeded => "Success",
+		PaymentTransactionStatus.Failed => "Failed",
+		_ => "Unknown"
+	};
+
+	private string Css => Status switch
+	{
+		PaymentTransactionStatus.Processing => "inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700",
+		PaymentTransactionStatus.Succeeded => "inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700",
+		PaymentTransactionStatus.Failed => "inline-flex items-center rounded-full bg-rose-100 px-2.5 py-1 text-xs font-medium text-rose-700",
+		_ => "inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700"
+	};
+}

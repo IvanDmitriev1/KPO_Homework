@@ -37,6 +37,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 
-app.MapGet("/", () => TypedResults.Redirect("/create-order", true));
+app.MapGet("/", () => TypedResults.Redirect("/orders", true));
 
 app.Run();

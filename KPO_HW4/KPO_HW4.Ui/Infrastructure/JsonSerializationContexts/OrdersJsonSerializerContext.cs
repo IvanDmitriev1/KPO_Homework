@@ -5,7 +5,7 @@ namespace KPO_HW4.Ui.Infrastructure.JsonSerializationContexts;
 [JsonSourceGenerationOptions(
     WriteIndented = true,
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
-    GenerationMode = JsonSourceGenerationMode.Serialization,
+    GenerationMode = JsonSourceGenerationMode.Default,
     Converters = [
         typeof(UserId.UserIdSystemTextJsonConverter),
         typeof(AccountId.AccountIdSystemTextJsonConverter),
