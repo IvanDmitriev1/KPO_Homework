@@ -11,7 +11,7 @@
 ## Стек
 
 - **.NET 10 / C#**
-- **.NET Aspire** для оркестрации дев-окружения
+- **.NET Aspire** для оркестрации
 - **PostgreSQL**
 - **RabbitMQ**
 - **MassTransit** + **EntityFramework Outbox/Inbox**
@@ -22,7 +22,7 @@
 - Payments Service: `http://localhost:8080/api/accounts/scalar`
 
 ### API Gateway
-- Прокси/маршрутизация запросов.
+- Проксирование запросов
 
 ### Orders Service
 - REST API:
@@ -31,9 +31,9 @@
   - Получить заказ по id
   - Публикует `PaymentRequested` в RabbitMQ
 - Обновление статуса заказа:
-  - Консюмирует `PaymentSucceeded` / `PaymentFailed` и переводит заказ в `FINISHED` / `CANCELLED`.
+  - Использует `PaymentSucceeded` / `PaymentFailed` и переводит заказ в `FINISHED` / `CANCELLED`.
 - Realtime:
-  - SignalR Hub `/ws/orders` — push-уведомления о смене статуса.
+  - SignalR Hub `/hub/orderNotifications` — push-уведомления о смене статуса.
 
 ### Payments Service
 - REST API:
@@ -43,7 +43,7 @@
   - История транзакций
   - Публикует `PaymentSucceeded` / `PaymentFailed` в RabbitMQ
 
-## UI (Blazor)
+## UI
 - `Orders` — страница с зказамии real-time обновления статуса
 - `Account` — страница баланс и транзакций
-- Push уведомления с SignalR WebSocket
+- Push уведомления с SignalR
