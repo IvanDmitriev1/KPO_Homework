@@ -37,13 +37,13 @@
 
 ### Payments Service
 - REST API:
-  - Создать счёт (1 на пользователя)
+  - Создать счёт
   - Пополнить баланс
   - Получить баланс
   - История транзакций
   - Публикует `PaymentSucceeded` / `PaymentFailed` в RabbitMQ
 
-## UI
+### UI
 - `Orders` — страница с зказамии real-time обновления статуса
 - `Account` — страница баланс и транзакций
 - Push уведомления с SignalR
