@@ -13,7 +13,6 @@ var env = builder.AddDockerComposeEnvironment("docker")
         dashboard.WithForwardedHeaders();
     });
 
-
 var redis = builder.AddRedis("redis")
     .WithRedisInsight();
 
@@ -73,5 +72,9 @@ var gateway = builder.AddYarp("gateway")
 
 ui.WithReference(gateway)
     .WaitFor(gateway);
+
+var tunnel = builder.AddDevTunnel("mytunnel")
+    .WithReference(gateway)
+    .WithAnonymousAccess();
 
 builder.Build().Run();

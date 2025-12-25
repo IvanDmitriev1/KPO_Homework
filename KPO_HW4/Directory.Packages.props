@@ -17,7 +17,7 @@
     <PackageVersion Include="Scalar.AspNetCore" Version="2.11.9" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0" />
     <PackageVersion Include="DotNext" Version="5.26.1" />
-	<PackageVersion Include="StronglyTypedId" Version="1.0.0-beta08" />
+    <PackageVersion Include="StronglyTypedId" Version="1.0.0-beta08" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1" />
     <!-- Centralized versions for service defaults -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.1.0" />
@@ -28,10 +28,11 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.14.0" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.14.0" />
     <!-- Aspire hosting pieces used by AppHost -->
+	<PackageVersion Include="Aspire.Hosting.DevTunnels" Version="13.1.0" />
     <PackageVersion Include="Aspire.Hosting.Docker" Version="13.1.0-preview.1.25616.3" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.1.0" />
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.1.0" />
     <PackageVersion Include="Aspire.Hosting.Yarp" Version="13.1.0" />
-	<PackageVersion Include="Aspire.Hosting.Redis" Version="13.1.0" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.1.0" />
   </ItemGroup>
 </Project>
