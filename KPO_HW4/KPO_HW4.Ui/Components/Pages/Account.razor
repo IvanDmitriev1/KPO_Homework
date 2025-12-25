@@ -1,0 +1,66 @@
+@page "/account"
+@rendermode InteractiveServer
+@inherits CancellableComponentBase
+@inject IUserContext UserContext
+@inject IAccountsApi AccountsApi
+
+<div class="max-w-4xl mx-auto px-4 py-10 space-y-6">
+	<h1 class="text-3xl font-semibold text-center text-slate-900 mb-8">Account</h1>
+
+	<AccountBalanceCard IsLoading="_isLoading" Balance="_balance" />
+
+	<LabelDivider Label="Add balance" />
+	<AccountTopUpCard OnTopUp="HandleTopUp" />
+	
+	<LabelDivider Label="Transactions" />
+
+	@if (_isLoading)
+	{
+		<span class="text-center">Loading...</span>
+	}
+	else if (_items.Count == 0)
+	{
+		<span class="text-center">No transactions</span>
+	}
+	else
+	{
+		<div class="space-y-2">
+			@foreach (var transaction in _items)
+			{
+				<TransactionCard Item="transaction"/>
+			}
+		</div>
+	}
+</div>
+
+@code {
+
+	bool _isLoading = true;
+
+	List<PaymentTransactionDto> _items = [];
+	decimal _balance;
+
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (!firstRender)
+			return;
+
+		await UserContext.Initialize(CancellationToken);
+		_items = await AccountsApi.GetTransactionsAsync(UserContext.UserId, CancellationToken);
+		_balance = (await AccountsApi.GetBalanceAsync(UserContext.UserId, CancellationToken)).Balance;
+
+		_isLoading = false;
+		StateHasChanged();
+	}
+
+	private async Task HandleTopUp(decimal amount)
+	{
+		var amountMinor = decimal.ToInt64(decimal.Round(amount * 100m, 0, MidpointRounding.AwayFromZero));
+		var response = await AccountsApi.TopUpAsync(new TopUpAccountRequest(UserContext.UserId, amountMinor));
+
+		_items = await AccountsApi.GetTransactionsAsync(UserContext.UserId, CancellationToken);
+		_balance = (await AccountsApi.GetBalanceAsync(UserContext.UserId, CancellationToken)).Balance;
+	}
+
+}

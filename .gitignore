@@ -402,3 +402,5 @@ FodyWeavers.xsd
 
 /KPO_HW3/KPO_HW3.FileStorageService/data
 /KPO_HW3/KPO_HW3.Api/KPO_HW3.Api.json
+/KPO_HW4/KPO_HW4.Ui/wwwroot/css/app.css
+/KPO_HW4/KPO_HW4.Ui/tailwindcss.exe

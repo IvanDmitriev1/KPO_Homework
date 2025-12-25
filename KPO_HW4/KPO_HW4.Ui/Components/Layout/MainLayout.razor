@@ -1,0 +1,25 @@
+@using Blazored.Toast.Configuration
+@using KPO_HW4.Ui.Infrastructure
+@inherits LayoutComponentBase
+
+<BlazoredToasts @rendermode="InteractiveServer"
+                IconType="IconType.None"
+                MaxToastCount="12"
+                Position="ToastPosition.TopRight"
+                InfoClass="@TailwindToastClasses.Info"
+                SuccessClass="@TailwindToastClasses.Success"
+                WarningClass="@TailwindToastClasses.Warning"
+                ErrorClass="@TailwindToastClasses.Error"/>
+<OrdersToasts/>
+
+<AppHeader/>
+
+<div class="container max-w-7xl mx-auto px-6">
+    @Body
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

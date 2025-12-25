@@ -1,0 +1,21 @@
+<span class="@Css">
+	@Text
+</span>
+
+@code {
+	[Parameter] public PaymentTransactionType Type { get; set; }
+
+	private string Text => Type switch
+	{
+		PaymentTransactionType.TopUp => "Incoming",
+		PaymentTransactionType.Debit => "Payment",
+		_ => "Unknown"
+	};
+
+	private string Css => Type switch
+	{
+		PaymentTransactionType.TopUp => "inline-flex items-center rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700",
+		PaymentTransactionType.Debit => "inline-flex items-center rounded-full bg-purple-100 px-2.5 py-1 text-xs font-medium text-purple-700",
+		_ => "inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700"
+	};
+}

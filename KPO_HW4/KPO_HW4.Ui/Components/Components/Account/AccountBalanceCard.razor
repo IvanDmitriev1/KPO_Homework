@@ -1,0 +1,22 @@
+<LumexCard Class="p-4 flex flex-row items-center">
+	<span class="grow text-sm text-slate-500">Current Balance</span>
+	<span>
+		@if (IsLoading)
+		{
+			<span>Loading...</span>
+		}
+		else
+		{
+			@Balance.ToString("0.00")
+		}
+	</span>
+</LumexCard>
+
+@code
+{
+	[Parameter, EditorRequired]
+	public bool IsLoading { get; set; }
+
+	[Parameter, EditorRequired]
+	public decimal Balance { get; set; }
+}

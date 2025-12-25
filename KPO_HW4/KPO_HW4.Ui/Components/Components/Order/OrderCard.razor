@@ -1,0 +1,28 @@
+<LumexCard Class="flex flex-row gap-4 items-center p-4">
+	<div class="flex flex-col gap-1">
+		<div class="flex gap-1 text-gray-900">
+			<span>Id:</span>
+			<span>@Order.OrderId</span>
+		</div>
+		
+		<div class="flex gap-1">
+			<span class="text-gray-700">Amount:</span>
+			<span class="font-semibold">@Order.Amount.ToString("F1")</span>
+		</div>
+
+		<div class="flex gap-1 text-gray-500">
+			<span>Created:</span>
+			<span>@Order.CreatedAt.ToLocalTime().ToString("g")</span>
+		</div>
+	</div>
+	
+	<div class="grow text-gray-900 font-medium truncate">@Order.Description</div>
+	
+	<OrderStatusBadge Status="Order.Status" />
+</LumexCard>
+
+
+@code {
+	[Parameter, EditorRequired]
+    public OrderDto Order { get; set; } = null!;
+}

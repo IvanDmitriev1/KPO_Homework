@@ -1,0 +1,107 @@
+@page "/orders"
+@rendermode InteractiveServer
+@inherits CancellableComponentBase
+@inject IUserContext UserContext
+@inject IOrdersRealtimeClient OrdersRealtimeClient
+@inject IOrdersApiClient OrdersApi
+
+<div class="max-w-4xl mx-auto px-4 py-10 space-y-6">
+	<h1 class="text-3xl font-semibold text-center text-slate-900 mb-8">Orders</h1>
+	
+	<LabelDivider Label="Create order"/>
+	<CreateOrderCard OnOrder="HandleOrderCreation" />
+	
+	<LabelDivider Label="Orders" />
+	@if (_isBusy)
+	{
+		<span class="text-center">Loading...</span>
+	}
+	else if (_orders.Count == 0)
+	{
+		<span class="text-center">No orders found</span>
+	}
+	else
+	{
+		<div class="space-y-2">
+			@foreach (var order in _orders)
+			{
+				<OrderCard Order="order"/>
+			}
+		</div>
+	}
+</div>
+
+@code {
+
+	private bool _isBusy = true;
+	private IDisposable? _subscription;
+
+	private readonly List<OrderDto> _orders = [];
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (!firstRender)
+			return;
+
+		await UserContext.Initialize(CancellationToken);
+		await LoadOrders();
+	}
+
+	protected override void Dispose(bool disposing)
+	{
+		if (disposing)
+		{
+			_subscription?.Dispose();
+		}
+
+		base.Dispose(disposing);
+	}
+
+	private async Task LoadOrders()
+	{
+		if (UserContext.UserId == UserId.Empty || _orders.Count > 0)
+			return;
+
+		await OrdersRealtimeClient.ConnectAsync(UserContext.UserId);
+		_subscription = OrdersRealtimeClient.SubscribeToOrderStatusChange(OrderStatusChangedHandler);
+
+		var orders = await OrdersApi.ListByUserAsync(UserContext.UserId, CancellationToken);
+		_orders.AddRange(orders);
+
+		_isBusy = false;
+		StateHasChanged();
+	}
+
+	private async Task OrderStatusChangedHandler(OrderStatusChangedPush args)
+	{
+		var idx = _orders.FindIndex(x => x.OrderId == args.OrderId);
+		if (idx < 0)
+		{
+			if (await OrdersApi.GetAsync(args.OrderId) is not { } order)
+				return;
+
+			_orders.Insert(0, order);
+		}
+		else
+		{
+			var old = _orders[idx];
+			_orders[idx] = old with
+			{
+				Status = args.Status,
+				UpdatedAt = DateTimeOffset.UtcNow
+			};
+		}
+		
+		await InvokeAsync(StateHasChanged);
+	}
+
+	private async Task HandleOrderCreation(CreateOrderCard.CreateOrderFormModel model)
+	{
+		if (UserContext.UserId == UserId.Empty)
+			return;
+
+		var amountMinor = decimal.ToInt64(decimal.Round(model.Amount * 100m, 0, MidpointRounding.AwayFromZero));
+		var response = await OrdersApi.CreateAsync(new CreateOrderRequest(UserContext.UserId, amountMinor, model.Description));
+	}
+
+}
