@@ -1,4 +1,6 @@
+using Aspire.Hosting.Yarp;
 using Aspire.Hosting.Yarp.Transforms;
+using Microsoft.Extensions.Hosting;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -57,12 +59,31 @@ var gateway = builder.AddYarp("gateway")
     .WithHostHttpsPort(8433)
     .WithConfiguration(yarp =>
     {
+        //Orders
+        yarp.AddRoute("/api/orders/scalar/{**catchAll}", ordersService)
+            .WithTransformPathRemovePrefix("/api/orders/scalar")
+            .WithTransformPathPrefix("/scalar");
+
+        yarp.AddRoute("/api/orders/openapi/{**catchAll}", ordersService)
+            .WithTransformPathRemovePrefix("/api/orders");
+
         yarp.AddRoute("/api/orders/{**catch-all}", ordersService)
             .WithTransformPathRemovePrefix("/api");
+
+
+        //Payments
+        yarp.AddRoute("/api/accounts/scalar/{**catchAll}", paymentsService)
+            .WithTransformPathRemovePrefix("/api/accounts/scalar")
+            .WithTransformPathPrefix("/scalar");
+
+        yarp.AddRoute("/api/accounts/openapi/{**catchAll}", paymentsService)
+            .WithTransformPathRemovePrefix("/api/accounts");
 
         yarp.AddRoute("/api/accounts/{**catch-all}", paymentsService)
             .WithTransformPathRemovePrefix("/api");
 
+
+        //UI
         yarp.AddRoute("/{**catch-all}", ui);
     })
     .PublishAsDockerComposeService((resource, service) =>
@@ -73,8 +94,11 @@ var gateway = builder.AddYarp("gateway")
 ui.WithReference(gateway)
     .WaitFor(gateway);
 
-var tunnel = builder.AddDevTunnel("mytunnel")
-    .WithReference(gateway)
-    .WithAnonymousAccess();
+if (builder.Environment.IsDevelopment())
+{
+    var tunnel = builder.AddDevTunnel("mytunnel")
+        .WithReference(gateway)
+        .WithAnonymousAccess();
+}
 
 builder.Build().Run();

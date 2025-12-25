@@ -7,7 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddInfrastructure();
 builder.AddServiceDefaults();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi("v1", openApi =>
+{
+    openApi.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Servers = [];
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.AddSignalR()
     .AddStackExchangeRedis(builder.Configuration.GetConnectionString("redis") ??
@@ -23,21 +30,19 @@ builder.Services.AddCors(o => o.AddPolicy("frontend", p =>
 var app = builder.Build();
 app.MapDefaultEndpoints();
 
-if (app.Environment.IsDevelopment())
+app.MapOpenApi();
+app.MapScalarApiReference(options =>
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference(options =>
-    {
-        options.Theme = ScalarTheme.Moon;
-        options.Layout = ScalarLayout.Modern;
-        options.WithDynamicBaseServerUrl();
-    });
-}
+    options.Theme = ScalarTheme.Moon;
+    options.Layout = ScalarLayout.Modern;
+    options.WithDynamicBaseServerUrl();
+});
 
 app.UseCors("frontend");
 
 app.MapOrdersEndpoints();
 
-app.MapGet("/", () => TypedResults.Redirect("/scalar", true));
+app.MapGet("/", () => TypedResults.Redirect("/scalar", true))
+    .ExcludeFromApiReference();
 
 app.Run();
